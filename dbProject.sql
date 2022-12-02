@@ -138,6 +138,7 @@ EXEC dropAllTables;
 --DROP DATABASE FootballDB;
 --EXEC sp_fkeys 'Stadium'
 
+--2.1 d
 GO;
 CREATE PROC clearAllTables
 AS
