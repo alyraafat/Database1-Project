@@ -1,5 +1,6 @@
 ﻿CREATE DATABASE FootballDB;
 
+--2.1 a
 GO;
 CREATE PROCEDURE createAllTables
 AS
@@ -10,16 +11,16 @@ AS
 	);
 
 	CREATE TABLE Stadium(
-		id int IDENTITY,
+		id INT IDENTITY,
 		name VARCHAR(20),
-		capacity int,
+		capacity INT,
 		location VARCHAR(20),
 		status BIT,
 		CONSTRAINT pk_stadium PRIMARY KEY(id)
 	);
 
 	CREATE TABLE Club(
-		id int IDENTITY,
+		id INT IDENTITY,
 		name VARCHAR(20),
 		location VARCHAR(20),
 		CONSTRAINT pk_club PRIMARY KEY(id)
@@ -27,9 +28,9 @@ AS
 
 	CREATE TABLE StadiumManager(
 		username VARCHAR(20),
-		id int IDENTITY,
+		id INT IDENTITY,
 		name VARCHAR(20),
-		stadium_id int,
+		stadium_id INT,
 		CONSTRAINT pk_stadium_manager PRIMARY KEY(username,id),
 		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -37,9 +38,9 @@ AS
 
 	CREATE TABLE ClubRepresentative(
 		username VARCHAR(20),
-		id int IDENTITY,
+		id INT IDENTITY,
 		name VARCHAR(20),
-		club_id int,
+		club_id INT,
 		CONSTRAINT pk_club_rep PRIMARY KEY(username,id),
 		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(club_id) REFERENCES Club(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -59,7 +60,7 @@ AS
 
 	CREATE TABLE SportsAssociationManager(
 		username VARCHAR(20),
-		id int IDENTITY,
+		id INT IDENTITY,
 		name VARCHAR(20),
 		CONSTRAINT pk_sam PRIMARY KEY(username,id),
 		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -67,67 +68,89 @@ AS
 
 	CREATE TABLE SystemAdmin(
 		username VARCHAR(20),
-		id int IDENTITY,
+		id INT IDENTITY,
 		name VARCHAR(20),
 		CONSTRAINT pk_system_admin PRIMARY KEY(username,id),
 		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 	);
 
-	CREATE TABLE Match(
-		id int IDENTITY,
+	CREATE TABLE Matches(
+		id INT IDENTITY,
 		start_time DATETIME,
 		end_time DATETIME,
-		allowed_num_of_attendees int,
-		stadium_id int,
-		host_id int,
-		guest_id int,
-		CONSTRAINT pk_match PRIMARY KEY(id),
+		allowed_num_of_attendees INT,
+		stadium_id INT,
+		host_id INT,
+		guest_id INT,
+		CONSTRAINT pk_matches PRIMARY KEY(id),
 		FOREIGN KEY(host_id) REFERENCES Club(id) ON DELETE CASCADE ON UPDATE CASCADE,
-		FOREIGN KEY(guest_id) REFERENCES Club(id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(guest_id) REFERENCES Club(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
 		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE Ticket(
-		id int IDENTITY,
+		id INT IDENTITY,
 		status BIT,
 		fan_username VARCHAR(20),
-		fan_id int,
-		match_id int,
+		fan_id VARCHAR(20),
+		match_id INT,
 		CONSTRAINT pk_ticket PRIMARY KEY(id),
-		FOREIGN KEY(fan_username,fan_id) REFERENCES Fan(username,id) ON DELETE CASCADE ON UPDATE CASCADE,
-		FOREIGN KEY(match_id) REFERENCES Match(id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(fan_username,fan_id) REFERENCES Fan(username,national_id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(match_id) REFERENCES Matches(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE HostRequest(
-		id int IDENTITY,
+		id INT IDENTITY,
 		status BIT,
-		match_id int,
-		smd int,
-		crd int,
+		match_id INT,
+		smu VARCHAR(20),
+		smd INT,
+		cru VARCHAR(20),
+		crd INT,
 		CONSTRAINT pk_host_request PRIMARY KEY(id),
-		FOREIGN KEY(smd) REFERENCES StadiumManager(id) ON DELETE CASCADE ON UPDATE CASCADE,
-		FOREIGN KEY(match_id) REFERENCES Match(id) ON DELETE CASCADE ON UPDATE CASCADE,
-		FOREIGN KEY(crd) REFERENCES ClubRepresentative(id) ON DELETE CASCADE ON UPDATE CASCADE
+		FOREIGN KEY(smu,smd) REFERENCES StadiumManager(username,id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(cru,crd) REFERENCES ClubRepresentative(username,id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+		FOREIGN KEY(match_id) REFERENCES Matches(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
 	);
 GO;
 Drop PROC createAllTables;
 EXEC createAllTables;
 
+--2.1 b
 GO;
 CREATE PROC dropAllTables
 AS
 	DROP TABLE IF EXISTS 
-	SystemUser,
-	StadiumManager,
-	ClubRepresentative,
-	Fan,
 	SportsAssociationManager,
 	SystemAdmin,
 	Ticket,
-	MATCH,
+	HostRequest,
+	Matches,
+	Fan,
+	StadiumManager,
+	ClubRepresentative,
+	SystemUser,
 	Stadium,
-	Club,
-	HostRequest;
+	Club;
 GO;
 Drop PROC dropAllTables;
 EXEC dropAllTables;
+--DROP DATABASE FootballDB;
+--EXEC sp_fkeys 'Stadium'
+
+GO;
+CREATE PROC clearAllTables
+AS
+	DELETE FROM SportsAssociationManager;
+	DELETE FROM SystemAdmin;
+	DELETE FROM Ticket;
+	DELETE FROM HostRequest;
+	DELETE FROM Matches;
+	DELETE FROM Fan;
+	DELETE FROM StadiumManager;
+	DELETE FROM ClubRepresentative;
+	DELETE FROM SystemUser;
+	DELETE FROM Stadium;
+	DELETE FROM Club;
+GO;
+EXEC clearAllTables;
