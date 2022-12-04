@@ -1,6 +1,6 @@
 ﻿CREATE DATABASE FootballDB;
 
---2.1 a
+--2.1 a....
 GO;
 CREATE PROCEDURE createAllTables
 AS
