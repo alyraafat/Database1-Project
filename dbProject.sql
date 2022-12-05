@@ -275,7 +275,7 @@ WHERE NOT EXISTS (
 		WHERE C1.id <> C2.id
 		);
 
---2.4 iv
+--2.3 iv
 GO;
 CREATE PROC deleteMatch 
 @namefirstclub varchar(20),
@@ -297,6 +297,35 @@ DELETE FROM Matches WHERE (Matches.host_id = @first AND Matches.guest_id = @seco
 
 ELSE
 DELETE FROM Matches WHERE (Matches.host_id = @second AND Matches.guest_id = @first) 
+
+--2.3 v
+GO;
+CREATE PROC deleteMatchesOnStadium
+@nameofstadium varchar(20)
+AS
+DECLARE @id INT
+SELECT @id = S.id
+FROM Stadium S
+WHERE S.name = @nameofstadium;
+DELETE FROM Matches WHERE Matches.stadium_id = @id;
+
+--2.3 vi
+GO;
+CREATE PROC addClub
+@nameofclub varchar(20),
+@nameoflocation varchar(20)
+AS
+INSERT INTO Club (name,location) VALUES (@nameofclub,@nameoflocation);
+
+--2.3 VII
+GO;
+CREATE PROC addTicket
+@namehostclub varchar(20),
+@namecompetingclub varchar(20),
+@datetime DATETIME
+AS
+DECLARE @
+INSERT INTO Ticket (fan_id,fan_username,id,match_id,status) VALUES ();
 
 
 
