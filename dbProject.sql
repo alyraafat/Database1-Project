@@ -1,5 +1,7 @@
 ﻿CREATE DATABASE FootballDB;
 
+USE  FootballDB;
+
 --2.1 a....
 GO;
 CREATE PROCEDURE createAllTables
@@ -199,3 +201,102 @@ INNER JOIN Matches M ON M.id = T.match_id
 INNER JOIN Club H ON H.id = M.host_id
 INNER JOIN CLUB A ON A.id = M.guest_id
 INNER JOIN Stadium S on S.id = M.stadium_id;
+
+--2.2 g
+GO;
+CREATE VIEW allClubs AS
+SELECT C.name , C.location
+FROM Club C
+
+--2.2 h
+GO; 
+CREATE VIEW allStadiums AS
+SELECT S.name , S.location , S.capacity , S.status 
+From Stadium
+
+--2.2 i
+GO;
+CREATE VIEW allRequests AS 
+SELECT CR.name , SM.name , R.status
+FROM HostRequest R
+INNER JOIN ClubRepresentative CR on CR.username = R.cru and CR.id = R.crd
+INNER JOIN StadiumManager SM ON SM.username = R.smu and SM.id = R.smd
+  
+
+--2.3 i
+GO;
+CREATE PROC addAssociationManager 
+@name varchar(20),
+@username varchar(20),
+@password varchar(20)
+AS
+INSERT INTO SystemUser VALUES (@username,@password);
+INSERT INTO SportsAssociationManager(username , name) VALUES (@username , @name);
+
+
+--2.3 ii
+GO;
+CREATE PROC addNewMatch
+@nameFirstClub varchar(20),
+@nameSecondClub varchar(20),
+@nameHostClub varchar(20),
+@time DATETIME
+AS 
+DECLARE @first INT
+SELECT @first = C.id
+FROM Club C
+WHERE C.name = @nameFirstClub;
+
+DECLARE @second INT
+SELECT @second = C.id
+FROM Club C
+Where C.name = @nameSecondClub;
+
+IF @nameFirstClub = @nameHostClub
+INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @first , @second)
+ELSE
+INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @second , @first)
+
+--2.3 iii
+GO;
+CREATE VIEW clubsWithNoMatches AS
+SELECT C.name
+FROM Club C
+WHERE NOT EXISTS (
+		SELECT C1.name 
+		FROM Club C1
+		INNER JOIN Matches M ON M.host_id = C1.id
+		WHERE C.id <> C1.id
+		)
+		AND  NOT EXISTS (
+		SELECT C2.name 
+		FROM Club C2
+		INNER JOIN Matches M ON M.guest_id = C1.id
+		WHERE C1.id <> C2.id
+		);
+
+--2.4 iv
+GO;
+CREATE PROC deleteMatch 
+@namefirstclub varchar(20),
+@namesecondclub varchar(20),
+@namehostclub varchar(20)
+AS
+DECLARE @first INT
+SELECT @first = C.id
+FROM Club C
+WHERE C.name = @nameFirstClub;
+
+DECLARE @second INT
+SELECT @second = C.id
+FROM Club C
+Where C.name = @nameSecondClub;
+
+IF @nameFirstClub = @nameHostClub
+DELETE FROM Matches WHERE (Matches.host_id = @first AND Matches.guest_id = @second) 
+
+ELSE
+DELETE FROM Matches WHERE (Matches.host_id = @second AND Matches.guest_id = @first) 
+
+
+
