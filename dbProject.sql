@@ -155,3 +155,47 @@ AS
 	DELETE FROM Club;
 GO;
 EXEC clearAllTables;
+
+--2.2 a
+GO;
+CREATE VIEW allAssocManagers AS
+SELECT S.username , S.name
+FROM SportsAssociationManager S;
+
+--2.2 b
+GO;
+CREATE VIEW allClubRepresentatives AS
+SELECT R.username , R.name , C.id
+From ClubRepresentative R
+INNER JOIN Club C ON C.id = R.Club_id
+
+--2.2 c
+GO;
+CREATE VIEW allStadiumManagers AS
+SELECT M.username , M.name , S.name
+FROM StadiumManager M
+INNER JOIN Stadium S ON S.id = M.stadium_id ;
+
+--2.2 d
+GO;
+CREATE VIEW allFans AS
+SELECT F.name , F.national_id , F.birth_date , F.status
+From Fan F
+
+--2.2 e 
+GO; 
+CREATE VIEW allMatches AS
+SELECT C1.name , C2.name , C1.name , M.start_time
+FROM Matches M
+INNER JOIN Club C1 ON C1.id = M.host_id 
+INNER JOIN Club C2 ON C2.id = M.guest_id; 
+
+--2.2 f
+GO; 
+CREATE VIEW allTickets AS 
+SELECT H.name , A.name , S.name , M.start_time
+FROM Ticket T
+INNER JOIN Matches M ON M.id = T.match_id 
+INNER JOIN Club H ON H.id = M.host_id
+INNER JOIN CLUB A ON A.id = M.guest_id
+INNER JOIN Stadium S on S.id = M.stadium_id;
