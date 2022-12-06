@@ -275,13 +275,13 @@ CREATE VIEW clubsWithNoMatches AS
 			FROM Club C1
 				INNER JOIN Matches M ON M.host_id = C1.id
 			WHERE C.id = C1.id
-			)
-			AND  NOT EXISTS (
+	)
+	AND  NOT EXISTS (
 			SELECT C2.name 
 			FROM Club C2
 				INNER JOIN Matches M ON M.guest_id = C2.id
 			WHERE C.id = C2.id
-			);
+	);
 -- OR we can use outer join
 
 --2.3 iv
