@@ -203,12 +203,18 @@ SELECT * FROM Club;
 SELECT * FROM MATCHES;
 SELECT * FROM ClubRepresentative;
 SELECT * FROM StadiumManager;
-
+UPDATE StadiumManager
+SET stadium_id = 1
+WHERE id = 1
 INSERT INTO HostRequest (match_id,smu,smd,cru,crd) VALUES
 (18,'fffffff','5','barca rep','11'),
-(15,'fffffff','5','madrid rep','10'),
+(15,'ffff','4','madrid rep','10'),
 (16,'fffffff','5','ahly rep','9'),
-(17,'fffffff','5','barca rep','11');
+(17,'alybaba','1','barca rep','11');
+UPDATE HostRequest
+SET status = 'accepted'
+WHERE id IN (2,3,4);
+SELECT * FROM HostRequest; 
 
 --2.1 b
 GO;
@@ -653,6 +659,169 @@ CREATE FUNCTION allPendingRequests (@username VARCHAR(20))
 GO;
 
 --Test allPendingRequests
-SELECT * FROM [dbo].allPendingRequests('lol');
+SELECT * FROM [dbo].allPendingRequests('fffffff');
+
+GO;
+--2.3 xix
+CREATE PROC acceptRequest
+
+	@stadiummanagername VARCHAR(20),
+	@hostingclubName VARCHAR(20),
+	@competingclubName VARCHAR(20),
+	@matchstarttime VARCHAR(20)
+	AS
+	DECLARE @hostId INT
+	SELECT @hostId = C.id
+	FROM Club C
+	WHERE C.name = @hostingclubName
+
+	DECLARE @competingId INT
+	SELECT @competingId = C.id
+	FROM Club C
+	WHERE C.name = @hostingclubName
+	
+	DECLARE @requestId INT
+	SELECT @requestId = H.id
+	FROM HostRequest H INNER JOIN Matches M ON M.id = H.match_id
+	WHERE start_time= @matchstarttime AND host_id= @hostId AND guest_id= @competingId
+
+	UPDATE HostRequest
+SET status='Accepted'
+where id=@requestId
 
 
+--2.3 xx
+GO;
+CREATE PROC rejectRequest
+
+	@stadiummanagername VARCHAR(20),
+	@hostingclubName VARCHAR(20),
+	@competingclubName VARCHAR(20),
+	@matchstarttime VARCHAR(20)
+	AS
+	DECLARE @hostId INT
+	SELECT @hostId = C.id
+	FROM Club C
+	WHERE C.name = @hostingclubName
+
+	DECLARE @competingId INT
+	SELECT @competingId = C.id
+	FROM Club C
+	WHERE C.name = @hostingclubName
+	
+	DECLARE @requestId INT
+	SELECT @requestId = H.id
+	FROM HostRequest H INNER JOIN Matches M ON M.id = H.match_id
+	WHERE start_time= @matchstarttime AND host_id= @hostId AND guest_id= @competingId
+
+	UPDATE HostRequest
+SET status='Rejected'
+where id=@requestId
+
+--2.3 xxi
+Go
+CREATE PROC addfan
+	@name VARCHAR(20),
+	@nationalidnumber VARCHAR(20),
+	@birthdate date,
+	@address VARCHAR(20),
+	@phonenumber int
+	AS
+
+	INSERT INTO Fan(name,national_id,birth_date,address,phone) VALUES (@name,@nationalidnumber,@birthdate,@address,@phonenumber);
+GO;
+
+--2.3 xxii 
+
+CREATE FUNCTION upcomingMatchesOfClub (@clubname VARCHAR(20))
+	RETURNS TABLE
+	AS
+
+	RETURN 
+		SELECT C.name, C2.name,M.start_time,S.name
+		FROM Matches M 
+			inner join Club C ON C.id = M.host_id
+			inner join Club C2 on C2.id =M.guest_id
+			inner join Stadium S on s.id=m.stadium_id
+		WHERE  C.name = @clubname AND start_time> CURRENT_TIMESTAMP
+
+--2.3 xxiii
+go
+CREATE FUNCTION availableMatchesToAttend (@date date)
+	RETURNS TABLE
+	AS
+
+	RETURN 
+		SELECT C.name, C2.name,M.start_time,S.name
+		FROM Matches M 
+			inner join Club C ON C.id = M.host_id
+			inner join Club C2 on C2.id =M.guest_id
+			inner join Stadium S on s.id=m.stadium_id
+			inner join Ticket T on t.match_id=M.id
+		WHERE  T.status=1 AND @date =CURRENT_TIMESTAMP
+
+--2.3 xxiv
+GO;
+CREATE PROC purchaseTicket
+    @nationalidnumber int,
+	@nameHostClub VARCHAR(20),
+	@nameCompetingClub VARCHAR(20),
+	@startTime DATETIME
+	AS
+
+	DECLARE @hostId INT
+
+	SELECT @hostId = C.id
+	FROM Club C
+	WHERE C.name = @nameHostClub;
+
+	DECLARE @guestId INT
+
+	SELECT @guestId = C.id
+	FROM Club C
+	Where C.name = @nameCompetingClub;
+
+	
+
+	DECLARE @matchId INT
+
+	SELECT @matchId = M.id
+	FROM Matches M
+	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
+
+	INSERT INTO Ticket (fan_id,match_id) VALUES (@nationalidnumber,@matchId);
+
+GO;
+--2.3 xxv
+GO;
+CREATE PROC updateMatchHost
+    
+	@nameHostClub VARCHAR(20),
+	@nameCompetingClub VARCHAR(20),
+	@startTime DATETIME
+	AS
+
+	DECLARE @hostId INT
+
+	SELECT @hostId = C.id
+	FROM Club C
+	WHERE C.name = @nameHostClub;
+
+	DECLARE @guestId INT
+
+	SELECT @guestId = C.id
+	FROM Club C
+	Where C.name = @nameCompetingClub;
+
+	
+
+	DECLARE @matchId INT
+
+	SELECT @matchId = M.id
+	FROM Matches M
+	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
+
+
+	UPDATE Matches
+	SET host_id= @guestId,guest_id=@hostId
+	WHERE host_id=@hostId AND guest_id=@guestId
