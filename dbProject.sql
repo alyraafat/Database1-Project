@@ -367,9 +367,9 @@ CREATE PROC addNewMatch
 	Where C.name = @nameSecondClub;
 
 	IF @nameFirstClub = @nameHostClub
-	INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @first , @second)
+		INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @first , @second)
 	ELSE
-	INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @second , @first)
+		INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @second , @first)
 
 -- Test addNewMatch
 --EXEC addNewMatch @nameFirstClub
@@ -403,24 +403,22 @@ CREATE PROC deleteMatch
 	AS
 
 	DECLARE @first INT
-
 	SELECT @first = C.id
 	FROM Club C
 	WHERE C.name = @nameFirstClub;
 
 	DECLARE @second INT
-
 	SELECT @second = C.id
 	FROM Club C
 	Where C.name = @nameSecondClub;
 
 	IF @nameFirstClub = @nameHostClub
-	DELETE FROM Matches 
-	WHERE (Matches.host_id = @first AND Matches.guest_id = @second) 
+		DELETE FROM Matches 
+		WHERE (Matches.host_id = @first AND Matches.guest_id = @second) 
 
 	ELSE
-	DELETE FROM Matches 
-	WHERE (Matches.host_id = @second AND Matches.guest_id = @first) 
+		DELETE FROM Matches 
+		WHERE (Matches.host_id = @second AND Matches.guest_id = @first) 
 
 --2.3 v
 GO;
@@ -429,7 +427,6 @@ CREATE PROC deleteMatchesOnStadium
 	AS
 
 	DECLARE @id INT
-
 	SELECT @id = S.id
 	FROM Stadium S
 	WHERE S.name = @nameOfStadium;
@@ -455,13 +452,11 @@ CREATE PROC addTicket
 	AS
 
 	DECLARE @hostId INT
-
 	SELECT @hostId = C.id
 	FROM Club C
 	WHERE C.name = @nameHostClub;
 
 	DECLARE @guestId INT
-
 	SELECT @guestId = C.id
 	FROM Club C
 	Where C.name = @nameCompetingClub;
@@ -469,7 +464,6 @@ CREATE PROC addTicket
 	INSERT INTO Matches(start_time,host_id,guest_id) VALUES (@startTime,@hostId,@guestId);
 
 	DECLARE @matchId INT
-
 	SELECT @matchId = M.id
 	FROM Matches M
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
@@ -483,7 +477,6 @@ CREATE PROC deleteClub
 	AS
 
 	DECLARE @id INT
-
 	SELECT @id = C.id
 	FROM Club C
 	WHERE C.name = @clubName;
@@ -508,7 +501,6 @@ CREATE PROC deleteStadium
 	AS
 
 	DECLARE @id INT
-
 	SELECT @id = S.id
 	FROM Stadium S
 	WHERE S.name = @stadiumName;
@@ -546,7 +538,6 @@ CREATE PROC addRepresentative
 	AS
 
 	DECLARE @clubId INT
-
 	SELECT @clubId = C.id
 	FROM Club C
 	WHERE C.name = @clubName
@@ -665,85 +656,105 @@ GO;
 --2.3 xix
 CREATE PROC acceptRequest
 
-	@stadiummanagername VARCHAR(20),
-	@hostingclubName VARCHAR(20),
-	@competingclubName VARCHAR(20),
-	@matchstarttime VARCHAR(20)
+	@stadiumManagerName VARCHAR(20),
+	@hostingClubName VARCHAR(20),
+	@competingClubName VARCHAR(20),
+	@matchStartTime VARCHAR(20)
 	AS
+
+	DECLARE @stadiumID INT
+	DECLARE @smu VARCHAR(20)
+	DECLARE @smd INT
+	SELECT @smd =  SM.id, @smu = SM.username, @stadiumID = SM.stadium_id
+	FROM StadiumManager SM
+	WHERE SM.name = @stadiumManagerName
+
 	DECLARE @hostId INT
 	SELECT @hostId = C.id
 	FROM Club C
-	WHERE C.name = @hostingclubName
+	WHERE C.name = @hostingClubName
 
 	DECLARE @competingId INT
 	SELECT @competingId = C.id
 	FROM Club C
-	WHERE C.name = @hostingclubName
+	WHERE C.name = @competingClubName
 	
 	DECLARE @requestId INT
 	SELECT @requestId = H.id
-	FROM HostRequest H INNER JOIN Matches M ON M.id = H.match_id
-	WHERE start_time= @matchstarttime AND host_id= @hostId AND guest_id= @competingId
-
+	FROM HostRequest H 
+		INNER JOIN Matches M ON M.id = H.match_id
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd AND H.smu = @smu 
+	
 	UPDATE HostRequest
-SET status='Accepted'
-where id=@requestId
+	SET status='accepted'
+	where id=@requestId
 
-
+	UPDATE Matches
+	SET stadium_id = @stadiumID
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId
+GO;
 --2.3 xx
 GO;
 CREATE PROC rejectRequest
 
-	@stadiummanagername VARCHAR(20),
-	@hostingclubName VARCHAR(20),
-	@competingclubName VARCHAR(20),
-	@matchstarttime VARCHAR(20)
+	@stadiumManagerName VARCHAR(20),
+	@hostingClubName VARCHAR(20),
+	@competingClubName VARCHAR(20),
+	@matchStartTime VARCHAR(20)
 	AS
+
+	DECLARE @smu VARCHAR(20)
+	DECLARE @smd INT
+	SELECT @smd =  SM.id, @smu = SM.username
+	FROM StadiumManager SM
+	WHERE SM.name = @stadiumManagerName
+
 	DECLARE @hostId INT
 	SELECT @hostId = C.id
 	FROM Club C
-	WHERE C.name = @hostingclubName
+	WHERE C.name = @hostingClubName
 
 	DECLARE @competingId INT
 	SELECT @competingId = C.id
 	FROM Club C
-	WHERE C.name = @hostingclubName
+	WHERE C.name = @competingClubName
 	
 	DECLARE @requestId INT
 	SELECT @requestId = H.id
-	FROM HostRequest H INNER JOIN Matches M ON M.id = H.match_id
-	WHERE start_time= @matchstarttime AND host_id= @hostId AND guest_id= @competingId
-
+	FROM HostRequest H 
+		INNER JOIN Matches M ON M.id = H.match_id
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd AND H.smu = @smu 
+	
 	UPDATE HostRequest
-SET status='Rejected'
-where id=@requestId
+	SET status='rejected'
+	where id=@requestId
 
 --2.3 xxi
-Go
-CREATE PROC addfan
+GO;
+CREATE PROC addFan
 	@name VARCHAR(20),
-	@nationalidnumber VARCHAR(20),
-	@birthdate date,
+	@nationalIdNumber VARCHAR(20),
+	@birthDate date,
 	@address VARCHAR(20),
-	@phonenumber int
+	@phoneNumber int
 	AS
 
-	INSERT INTO Fan(name,national_id,birth_date,address,phone) VALUES (@name,@nationalidnumber,@birthdate,@address,@phonenumber);
+	INSERT INTO Fan(name,national_id,birth_date,address,phone) VALUES (@name,@nationalIdNumber,@birthDate,@address,@phoneNumber);
 GO;
 
 --2.3 xxii 
 
-CREATE FUNCTION upcomingMatchesOfClub (@clubname VARCHAR(20))
+CREATE FUNCTION upcomingMatchesOfClub (@clubName VARCHAR(20))
 	RETURNS TABLE
 	AS
 
 	RETURN 
-		SELECT C.name, C2.name,M.start_time,S.name
+		SELECT C.name AS host_club_name, C2.name AS competing_club_name,M.start_time,S.name AS stadium_name
 		FROM Matches M 
-			inner join Club C ON C.id = M.host_id
-			inner join Club C2 on C2.id =M.guest_id
-			inner join Stadium S on s.id=m.stadium_id
-		WHERE  C.name = @clubname AND start_time> CURRENT_TIMESTAMP
+			INNER JOIN Club C ON C.id = M.host_id
+			INNER JOIN Club C2 on C2.id =M.guest_id
+			INNER JOIN Stadium S on S.id=M.stadium_id
+		WHERE  C.name = @clubName AND M.start_time> CURRENT_TIMESTAMP
 
 --2.3 xxiii
 go
@@ -752,13 +763,13 @@ CREATE FUNCTION availableMatchesToAttend (@date date)
 	AS
 
 	RETURN 
-		SELECT C.name, C2.name,M.start_time,S.name
+		SELECT C.name AS host_club_name, C2.name AS competing_club_name,M.start_time,S.name AS stadium_name
 		FROM Matches M 
-			inner join Club C ON C.id = M.host_id
-			inner join Club C2 on C2.id =M.guest_id
-			inner join Stadium S on s.id=m.stadium_id
-			inner join Ticket T on t.match_id=M.id
-		WHERE  T.status=1 AND @date =CURRENT_TIMESTAMP
+			INNER JOIN Club C ON C.id = M.host_id
+			INNER JOIN Club C2 on C2.id =M.guest_id
+			INNER JOIN Stadium S on S.id=M.stadium_id
+			INNER JOIN Ticket T on T.match_id=M.id
+		WHERE T.status=1 AND M.start_time>=@date
 
 --2.3 xxiv
 GO;
@@ -769,54 +780,49 @@ CREATE PROC purchaseTicket
 	@startTime DATETIME
 	AS
 
-	DECLARE @hostId INT
+	DECLARE @username INT
+	SELECT @username = F.username
+	FROM Fan F
+	WHERE F.national_id = @nationalidnumber;
 
+	DECLARE @hostId INT
 	SELECT @hostId = C.id
 	FROM Club C
 	WHERE C.name = @nameHostClub;
 
 	DECLARE @guestId INT
-
 	SELECT @guestId = C.id
 	FROM Club C
 	Where C.name = @nameCompetingClub;
 
-	
-
 	DECLARE @matchId INT
-
 	SELECT @matchId = M.id
 	FROM Matches M
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
-
-	INSERT INTO Ticket (fan_id,match_id) VALUES (@nationalidnumber,@matchId);
-
+	
+	UPDATE Ticket
+	SET fan_id = @nationalidnumber, fan_username = @username
+	WHERE match_id = @matchId
 GO;
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
-    
 	@nameHostClub VARCHAR(20),
 	@nameCompetingClub VARCHAR(20),
 	@startTime DATETIME
 	AS
 
 	DECLARE @hostId INT
-
 	SELECT @hostId = C.id
 	FROM Club C
 	WHERE C.name = @nameHostClub;
 
 	DECLARE @guestId INT
-
 	SELECT @guestId = C.id
 	FROM Club C
 	Where C.name = @nameCompetingClub;
 
-	
-
 	DECLARE @matchId INT
-
 	SELECT @matchId = M.id
 	FROM Matches M
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
@@ -825,3 +831,35 @@ CREATE PROC updateMatchHost
 	UPDATE Matches
 	SET host_id= @guestId,guest_id=@hostId
 	WHERE host_id=@hostId AND guest_id=@guestId
+GO;
+
+--2.3 xxvi
+GO;
+CREATE PROC deleteMatchesOnStadium
+	@stadiumName VARCHAR(20)
+	AS
+
+	DECLARE @stadiumId INT
+	SELECT @stadiumId = S.id
+	FROM Stadium S
+	WHERE S.name = @stadiumName
+
+	DELETE FROM Matches
+	WHERE stadium_id = @stadiumId AND start_time>=CURRENT_TIMESTAMP
+GO;
+
+--2.3 xxvii
+GO;
+CREATE VIEW matchesPerTeam
+AS
+	SELECT C.name, COUNT(M.id) AS matches_per_club
+	FROM Club C
+		INNER JOIN Matches M ON M.host_id = C.id
+		INNER JOIN Club C2 ON M.guest_id = C2.id
+	WHERE M.start_time<CURRENT_TIMESTAMP AND M.stadium_id IS NOT NULL
+	GROUP BY C.name
+GO;
+--Test matchesPerTeam
+DROP VIEW matchesPerTeam;
+SELECT * FROM matchesPerTeam;
+
