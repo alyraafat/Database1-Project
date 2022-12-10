@@ -6,11 +6,11 @@ USE  FootballDB;
 GO;
 CREATE PROCEDURE createAllTables
 AS
---	CREATE TABLE SystemUser(
---		username VARCHAR(20),
---		password VARCHAR(20),
---		CONSTRAINT pk_system_user PRIMARY KEY(username)
---	);
+	CREATE TABLE SystemUser(
+		username VARCHAR(20),
+		password VARCHAR(20),
+		CONSTRAINT pk_system_user PRIMARY KEY(username)
+	);
 
 	CREATE TABLE Stadium(
 		id INT IDENTITY,
@@ -33,9 +33,8 @@ AS
 		id INT IDENTITY UNIQUE,
 		name VARCHAR(20),
 		stadium_id INT,
-		password VARCHAR(20),
-		CONSTRAINT pk_stadium_manager PRIMARY KEY(username,id),
---		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
+		CONSTRAINT pk_stadium_manager PRIMARY KEY(id),
+		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
@@ -44,9 +43,8 @@ AS
 		id INT IDENTITY UNIQUE,
 		name VARCHAR(20),
 		club_id INT,
-		password VARCHAR(20),
-		CONSTRAINT pk_club_rep PRIMARY KEY(username,id),
---		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
+		CONSTRAINT pk_club_rep PRIMARY KEY(id),
+		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(club_id) REFERENCES Club(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
@@ -58,27 +56,24 @@ AS
 		address VARCHAR(20),
 		status BIT DEFAULT 1, -- 1 means unblocked, 0 means blocked
 		birth_date DATE,
-		password VARCHAR(20),
-		CONSTRAINT pk_fan PRIMARY KEY(username,national_id),
---		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE
+		CONSTRAINT pk_fan PRIMARY KEY(national_id),
+		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE SportsAssociationManager(
 		username VARCHAR(20) UNIQUE,
 		id INT IDENTITY UNIQUE,
 		name VARCHAR(20),
-		password VARCHAR(20),
-		CONSTRAINT pk_sam PRIMARY KEY(username,id),
---		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
+		CONSTRAINT pk_sam PRIMARY KEY(id),
+		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 	);
 
 	CREATE TABLE SystemAdmin(
 		username VARCHAR(20) UNIQUE,
 		id INT IDENTITY UNIQUE,
 		name VARCHAR(20),
-		password VARCHAR(20),
-		CONSTRAINT pk_system_admin PRIMARY KEY(username,id),
---		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
+		CONSTRAINT pk_system_admin PRIMARY KEY(id),
+		FOREIGN KEY(username) REFERENCES SystemUser(username) ON DELETE CASCADE ON UPDATE CASCADE,
 	);
 
 	CREATE TABLE Matches(
@@ -98,26 +93,29 @@ AS
 	CREATE TABLE Ticket(
 		id INT IDENTITY,
 		status BIT DEFAULT 1, -- 1 means available, 0 means unavailable
-		fan_username VARCHAR(20),
-		fan_id VARCHAR(20),
 		match_id INT,
 		CONSTRAINT pk_ticket PRIMARY KEY(id),
-		FOREIGN KEY(fan_username,fan_id) REFERENCES Fan(username,national_id) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(match_id) REFERENCES Matches(id) ON DELETE CASCADE ON UPDATE CASCADE
+	);
+
+	CREATE TABLE TicketBuyingTransactions(
+		fan_national_id VARCHAR(20),
+		ticket_id INT,
+		CONSTRAINT pk_ticketBuyingTransactions PRIMARY KEY(ticket_id),
+		FOREIGN KEY(fan_national_id) REFERENCES Fan(national_id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(ticket_id) REFERENCES Ticket(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE HostRequest(
 		id INT IDENTITY,
 		status VARCHAR(20) DEFAULT 'unhandled', --unhandled or accepted or rejected
 		match_id INT,
-		smu VARCHAR(20),
 		smd INT,
-		cru VARCHAR(20),
 		crd INT,
 		CONSTRAINT pk_host_request PRIMARY KEY(id),
 		CONSTRAINT check_status CHECK(status='accepted' OR status='rejected' OR status='unhandled'),
-		FOREIGN KEY(smu,smd) REFERENCES StadiumManager(username,id) ON DELETE CASCADE ON UPDATE CASCADE,
-		FOREIGN KEY(cru,crd) REFERENCES ClubRepresentative(username,id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(smd) REFERENCES StadiumManager(id) ON DELETE CASCADE ON UPDATE CASCADE,
+		FOREIGN KEY(crd) REFERENCES ClubRepresentative(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
 		FOREIGN KEY(match_id) REFERENCES Matches(id) ON DELETE NO ACTION ON UPDATE NO ACTION
 	);
 GO;
@@ -221,6 +219,7 @@ GO;
 CREATE PROC dropAllTables
 AS
 	DROP TABLE IF EXISTS 
+	TicketBuyingTransactions,
 	SportsAssociationManager,
 	SystemAdmin,
 	Ticket,
@@ -242,6 +241,7 @@ EXEC dropAllTables;
 GO;
 CREATE PROC clearAllTables
 AS
+	DELETE FROM TicketBuyingTransactions;
 	DELETE FROM SportsAssociationManager;
 	DELETE FROM SystemAdmin;
 	DELETE FROM Ticket;
@@ -254,6 +254,7 @@ AS
 	DELETE FROM Stadium;
 	DELETE FROM Club;
 GO;
+DROP PROC clearAllTables;
 EXEC clearAllTables;
 
 -------------------------------------------------------------------
@@ -329,9 +330,10 @@ GO;
 CREATE VIEW allRequests AS 
 	SELECT CR.name AS club_rep_name, SM.name AS stadium_manager_name, R.status
 	FROM HostRequest R
-		INNER JOIN ClubRepresentative CR on CR.username = R.cru and CR.id = R.crd
-		INNER JOIN StadiumManager SM ON SM.username = R.smu and SM.id = R.smd
-  
+		INNER JOIN ClubRepresentative CR on CR.id = R.crd
+		INNER JOIN StadiumManager SM ON SM.id = R.smd
+GO;
+DROP VIEW allRequests;
 -------------------------------------------------------------------
 
 --2.3 i
@@ -342,8 +344,10 @@ CREATE PROC addAssociationManager
 	@password VARCHAR(20)
 	AS
 
-	INSERT INTO SportsAssociationManager(username, name, password) VALUES (@username , @name, @password);
-
+	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+	INSERT INTO SportsAssociationManager(username, name) VALUES (@username , @name);
+GO;
+DROP PROC addAssociationManager;
 --Test addAssociationManager
 EXEC addAssociationManager @name = 'abbas', @username = 'zzz', @password='4343'
 SELECT * FROM SportsAssociationManager
@@ -542,8 +546,10 @@ CREATE PROC addRepresentative
 	FROM Club C
 	WHERE C.name = @clubName
 
-	INSERT INTO ClubRepresentative (username,name,club_id,password) VALUES (@username,@repName,@clubId,@password);
-
+	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+	INSERT INTO ClubRepresentative (username,name,club_id) VALUES (@username,@repName,@clubId);
+GO;
+DROP PROC addRepresentative;
 --2.3 xiv
 GO;
 CREATE FUNCTION viewAvailableStadiumsOn (@datetime DATETIME)
@@ -572,16 +578,14 @@ CREATE PROC addHostRequest
 	AS 
 
 	DECLARE @clubRepId INT;
-	DECLARE @clubRepUsername VARCHAR(20);
 	DECLARE @hostId INT;
-	SELECT @clubRepId = CR.id, @clubRepUsername=CR.username, @hostId = C.id
+	SELECT @clubRepId = CR.id, @hostId = C.id
 	FROM ClubRepresentative CR
 		INNER JOIN Club C on C.id = CR.club_id
 	WHERE C.name = @clubName
 
 	DECLARE @stadiumManagerId INT;
-	DECLARE @stadiumManagerUsername VARCHAR(20);
-	SELECT @stadiumManagerId = SM.id, @stadiumManagerUsername=SM.username
+	SELECT @stadiumManagerId = SM.id
 	FROM StadiumManager SM
 		INNER JOIN Stadium S on S.id = SM.stadium_id
 	WHERE S.name = @stadiumName
@@ -591,8 +595,11 @@ CREATE PROC addHostRequest
 	FROM Matches M
 	WHERE M.host_id = @hostId AND M.start_time = @startTime
 
-	INSERT INTO Ticket(match_id,smu,smd,cru,crd) VALUES (@matchId,@stadiumManagerUsername,@stadiumManagerId,@clubRepUsername,@clubRepId);
+	INSERT INTO HostRequest(match_id,smd,crd) VALUES (@matchId,@stadiumManagerId,@clubRepId);
+
 GO;
+DROP PROC addHostRequest;
+
 
 --2.3 xvi
 GO;
@@ -624,9 +631,12 @@ CREATE PROC addStadiumManager
 	SELECT @stadiumId = S.id
 	FROM Stadium S
 	WHERE S.name = @stadiumName
+	
+	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+	INSERT INTO StadiumManager(username,name,stadium_id) VALUES (@username,@name,@stadiumId);
 
-	INSERT INTO StadiumManager(username,name,stadium_id,password) VALUES (@username,@name,@stadiumId,@password);
 GO;
+DROP PROC addStadiumManager;
 
 --Test addStadiumManager
 EXEC addStadiumManager @name='lol',@stadiumName='2y neela',@username='fffffff',@password='1234';
@@ -642,12 +652,13 @@ CREATE FUNCTION allPendingRequests (@username VARCHAR(20))
 	RETURN 
 		SELECT CR.name AS club_rep_name, C.name AS competing_club,M.start_time
 		FROM HostRequest H
-			INNER JOIN StadiumManager SM ON H.smu=SM.username AND H.smd=SM.id
-			INNER JOIN ClubRepresentative CR ON H.cru = CR.username AND H.crd = CR.id
+			INNER JOIN StadiumManager SM ON H.smd=SM.id
+			INNER JOIN ClubRepresentative CR ON H.crd = CR.id
 			INNER JOIN Matches M ON M.id = H.match_id
 			INNER JOIN Club C ON C.id = M.guest_id
 		WHERE SM.username = @username AND H.status = 'unhandled'
 GO;
+DROP FUNCTION allPendingRequests;
 
 --Test allPendingRequests
 SELECT * FROM [dbo].allPendingRequests('fffffff');
@@ -663,9 +674,8 @@ CREATE PROC acceptRequest
 	AS
 
 	DECLARE @stadiumID INT
-	DECLARE @smu VARCHAR(20)
 	DECLARE @smd INT
-	SELECT @smd =  SM.id, @smu = SM.username, @stadiumID = SM.stadium_id
+	SELECT @smd =  SM.id, @stadiumID = SM.stadium_id
 	FROM StadiumManager SM
 	WHERE SM.name = @stadiumManagerName
 
@@ -683,7 +693,7 @@ CREATE PROC acceptRequest
 	SELECT @requestId = H.id
 	FROM HostRequest H 
 		INNER JOIN Matches M ON M.id = H.match_id
-	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd AND H.smu = @smu 
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd 
 	
 	UPDATE HostRequest
 	SET status='accepted'
@@ -692,7 +702,9 @@ CREATE PROC acceptRequest
 	UPDATE Matches
 	SET stadium_id = @stadiumID
 	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId
+
 GO;
+DROP PROC acceptRequest;
 --2.3 xx
 GO;
 CREATE PROC rejectRequest
@@ -703,9 +715,8 @@ CREATE PROC rejectRequest
 	@matchStartTime VARCHAR(20)
 	AS
 
-	DECLARE @smu VARCHAR(20)
 	DECLARE @smd INT
-	SELECT @smd =  SM.id, @smu = SM.username
+	SELECT @smd = SM.id
 	FROM StadiumManager SM
 	WHERE SM.name = @stadiumManagerName
 
@@ -723,11 +734,12 @@ CREATE PROC rejectRequest
 	SELECT @requestId = H.id
 	FROM HostRequest H 
 		INNER JOIN Matches M ON M.id = H.match_id
-	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd AND H.smu = @smu 
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd 
 	
 	UPDATE HostRequest
 	SET status='rejected'
 	where id=@requestId
+GO;
 
 --2.3 xxi
 GO;
@@ -741,9 +753,9 @@ CREATE PROC addFan
 
 	INSERT INTO Fan(name,national_id,birth_date,address,phone) VALUES (@name,@nationalIdNumber,@birthDate,@address,@phoneNumber);
 GO;
-
+DROP PROC addFan;
 --2.3 xxii 
-
+GO;
 CREATE FUNCTION upcomingMatchesOfClub (@clubName VARCHAR(20))
 	RETURNS TABLE
 	AS
@@ -800,9 +812,29 @@ CREATE PROC purchaseTicket
 	FROM Matches M
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
 	
-	UPDATE Ticket
-	SET fan_id = @nationalidnumber, fan_username = @username
-	WHERE match_id = @matchId
+	IF NOT EXISTS(
+		SELECT id 
+		FROM Ticket
+		WHERE status = 1 AND match_id = @matchId 
+	)
+	BEGIN
+		PRINT 'No tickets available'
+	END
+	ELSE 
+	BEGIN
+		DECLARE @ticketId INT
+		SELECT TOP 1 @ticketId = id 
+		FROM Ticket
+		WHERE status = 1 AND match_id = @matchId 
+
+		INSERT INTO TicketBuyingTransactions VALUES (@nationalidnumber,@ticketId);
+
+		UPDATE TICKET 
+		SET status = 0
+		WHERE status = 1 AND id = @ticketId
+	END
+	
+
 GO;
 --2.3 xxv
 GO;
@@ -852,14 +884,58 @@ GO;
 GO;
 CREATE VIEW matchesPerTeam
 AS
-	SELECT C.name, COUNT(M.id) AS matches_per_club
-	FROM Club C
-		INNER JOIN Matches M ON M.host_id = C.id
-		INNER JOIN Club C2 ON M.guest_id = C2.id
-	WHERE M.start_time<CURRENT_TIMESTAMP AND M.stadium_id IS NOT NULL
+	SELECT C.name, COUNT(M1.id) AS matches_per_club
+	FROM Matches M1
+		INNER JOIN Matches M2 ON M1.host_id = M2.guest_id
+		INNER JOIN Club C ON C.id = M1.host_id
+	WHERE M1.start_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
 	GROUP BY C.name
 GO;
+
 --Test matchesPerTeam
 DROP VIEW matchesPerTeam;
 SELECT * FROM matchesPerTeam;
 
+
+--xxviii
+GO;
+CREATE VIEW clubsNeverMatched
+AS
+	SELECT C1.name AS club1_name , C2.name AS club2_name
+	FROM Club C1, Club C2
+	WHERE NOT EXISTS(
+		SELECT * 
+		FROM Matches M
+		WHERE (M.host_id = C1.id AND M.guest_id = C2.id) OR (M.host_id = C2.id AND M.guest_id = C1.id)
+	)
+
+GO;
+--2.3 xxix
+CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
+	RETURNS TABLE
+	AS
+	RETURN
+		SELECT C4.name 
+		FROM ((
+				SELECT C1.id AS all_ids
+				FROM Club C1
+				WHERE C1.name <> @clubName
+			)
+			EXCEPT
+			(
+				(
+					SELECT M.guest_id
+					FROM Club C2
+						INNER JOIN Matches M ON C2.id = M.host_id
+					WHERE C2.name = @clubName
+				)
+				UNION
+				(
+					SELECT M.host_id
+					FROM Club C3
+						INNER JOIN Matches M ON C3.id = M.guest_id
+					WHERE C3.name = @clubName
+				)
+			)) as T 
+				INNER JOIN Club C4 ON C4.id = all_ids
+	
