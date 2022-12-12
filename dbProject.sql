@@ -938,4 +938,40 @@ CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 				)
 			)) as T 
 				INNER JOIN Club C4 ON C4.id = all_ids
+
+
+--2.3 xxx
+GO;
+CREATE FUNCTION matchWithHighestAttendance ()
+	RETURNS TABLE
+	AS 
+	RETURN 
+		SELECT host.name , guest.name
+		FROM Matches Mat
+		INNER JOIN Club host on Mat.host_id = host.id
+		INNER JOIN Club guest on Mat.host_id = guest.id
+
+--2.3 xxxi 
+GO;
+CREATE FUNCTION matchesRankedByAttendance()
+	RETURNS TABLE
+	AS 
+	RETURN 
+		SELECT host.name , guest.name , COUNT(Mat.id)
+		FROM Matches Mat
+		INNER JOIN Club host on Mat.host_id = host.id
+		INNER JOIN Club guest on Mat.host_id = guest.id
+		INNER JOIN Ticket T on T.match_id = Mat.id
+		GROUP BY host.name , guest.name
+		ORDER BY COUNT(Mat.id) DESC;
+
+--2.3 xxxii
+GO;
+CREATE FUNCTION requestsFromClub(@stadiumname varchar(20) , @clubname varchar(20))
+	RETURNS TABLE 
+	AS
+	RETURN 
+		SELECT host.name , guest.name
+
+
 	
