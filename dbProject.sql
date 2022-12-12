@@ -926,14 +926,14 @@ CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 				(
 					SELECT M.guest_id
 					FROM Club C2
-						INNER JOIN Matches M ON C2.id = M.host_id
+						INNER JOIN Matches M1 ON C2.id = M1.host_id
 					WHERE C2.name = @clubName
 				)
 				UNION
 				(
 					SELECT M.host_id
 					FROM Club C3
-						INNER JOIN Matches M ON C3.id = M.guest_id
+						INNER JOIN Matches M2 ON C3.id = M2.guest_id
 					WHERE C3.name = @clubName
 				)
 			)) as T 
@@ -948,8 +948,23 @@ CREATE FUNCTION matchWithHighestAttendance ()
 	RETURN 
 		SELECT host.name , guest.name
 		FROM Matches Mat
-		INNER JOIN Club host on Mat.host_id = host.id
-		INNER JOIN Club guest on Mat.host_id = guest.id
+			INNER JOIN Club host on Mat.host_id = host.id
+			INNER JOIN Club guest on Mat.guest_id = guest.id
+			INNER JOIN Ticket T ON Mat.id = T.match_id
+			INNER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
+		GROUP BY host.name , guest.name, Mat.id
+		HAVING COUNT(TBT.ticket_id) = (
+			SELECT MAX(count_of_tickets)
+			FROM (
+				SELECT COUNT(TBT.ticket_id) AS count_of_tickets
+				FROM Matches Mat
+					INNER JOIN Club host on Mat.host_id = host.id
+					INNER JOIN Club guest on Mat.guest_id = guest.id
+					INNER JOIN Ticket T ON Mat.id = T.match_id
+					INNER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
+				GROUP BY host.name , guest.name, Mat.id
+			) AS T
+		)
 
 --2.3 xxxi 
 GO;
@@ -959,19 +974,27 @@ CREATE FUNCTION matchesRankedByAttendance()
 	RETURN 
 		SELECT host.name , guest.name , COUNT(Mat.id)
 		FROM Matches Mat
-		INNER JOIN Club host on Mat.host_id = host.id
-		INNER JOIN Club guest on Mat.host_id = guest.id
-		INNER JOIN Ticket T on T.match_id = Mat.id
-		GROUP BY host.name , guest.name
+			INNER JOIN Club host on Mat.host_id = host.id
+			INNER JOIN Club guest on Mat.guest_id = guest.id
+			INNER JOIN Ticket T on T.match_id = Mat.id
+			INNER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
+		GROUP BY host.name , guest.name, Mat.id
 		ORDER BY COUNT(Mat.id) DESC;
 
 --2.3 xxxii
 GO;
-CREATE FUNCTION requestsFromClub(@stadiumname varchar(20) , @clubname varchar(20))
+CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20))
 	RETURNS TABLE 
 	AS
 	RETURN 
 		SELECT host.name , guest.name
+		FROM Matches Mat
+			INNER JOIN Club host on Mat.host_id = host.id
+			INNER JOIN Club guest on Mat.guest_id = guest.id
+			INNER JOIN Stadium S ON S.id = Mat.stadium_id
+			INNER JOIN StadiumManager SM ON S.id = SM.stadium_id
+			INNER JOIN ClubRepresentative CR ON CR.club_id = host.id
+		WHERE host.name = @clubName AND S.name = @stadiumName
 
 
 	
