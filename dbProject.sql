@@ -172,13 +172,13 @@ insert into ClubRepresentative(username,name,club_id) values('mostafa.elkout','m
 insert into ClubRepresentative(username,name,club_id) values('mirna.haitham','mirna',1)
 insert into ClubRepresentative(username,name,club_id) values('pep.guardiola','pep',3)
 
-insert into Match values('2022/10/10 9:45:00','2022/10/10 11:00:00',2,1,2)
+insert into Match(start_time,end_time,) values('2022/10/10 9:45:00','2022/10/10 11:00:00',2,1,2)
 insert into Match values('2022/11/20 7:45:00','2022/11/20 9:00:00',1,3,2)
 insert into Match values('2022/9/11 8:00:00','2022/9/11 11:00:00',3,2,1)
 
 insert into Ticket values(1,1)
-insert into Ticket values(0,3428,2)
-insert into Ticket values(1,812,3)
+insert into Ticket values(0,2)
+insert into Ticket values(1,3)
 
 insert into TicketBuyingTransactions values(3434,1);
 insert into TicketBuyingTransactions values(3428,2);
@@ -973,7 +973,7 @@ AS
 	FROM Match M1
 		INNER JOIN Match M2 ON M1.host_id = M2.guest_id
 		INNER JOIN Club C ON C.id = M1.host_id
-	WHERE M1.start_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
+	WHERE M1.end_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
 	GROUP BY C.name
 GO;
 
@@ -991,7 +991,11 @@ AS
 	WHERE NOT EXISTS(
 		SELECT * 
 		FROM Match M
-		WHERE (M.host_id = C1.id AND M.guest_id = C2.id) OR (M.host_id = C2.id AND M.guest_id = C1.id)
+		WHERE (M.host_id = C1.id AND M.guest_id = C2.id)
+	) AND NOT EXISTS (
+		SELECT * 
+		FROM Match M
+		WHERE (M.host_id = C2.id AND M.guest_id = C1.id)
 	)
 
 GO;
@@ -999,30 +1003,41 @@ GO;
 CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 	RETURNS TABLE
 	AS
-	RETURN
-		SELECT C4.name 
-		FROM ((
-				SELECT C1.id AS all_ids
-				FROM Club C1
-				WHERE C1.name <> @clubName
-			)
-			EXCEPT
-			(
-				(
-					SELECT M.guest_id
-					FROM Club C2
-						INNER JOIN Match M1 ON C2.id = M1.host_id
-					WHERE C2.name = @clubName
-				)
-				UNION
-				(
-					SELECT M.host_id
-					FROM Club C3
-						INNER JOIN Match M2 ON C3.id = M2.guest_id
-					WHERE C3.name = @clubName
-				)
-			)) as T 
-				INNER JOIN Club C4 ON C4.id = all_ids
+	RETURN 
+		SELECT C2.name AS club2_name
+		FROM Club C1, Club C2
+		WHERE C1.name = @clubName AND NOT EXISTS(
+			SELECT * 
+			FROM Match M
+			WHERE (M.host_id = C1.id AND M.guest_id = C2.id)
+		) AND NOT EXISTS (
+			SELECT * 
+			FROM Match M
+			WHERE (M.host_id = C2.id AND M.guest_id = C1.id)
+		)
+--		SELECT C4.name 
+--		FROM ((
+--				SELECT C1.id AS all_ids
+--				FROM Club C1
+--				WHERE C1.name <> @clubName
+--			)
+--			EXCEPT
+--			(
+--				(
+--					SELECT M.guest_id
+--					FROM Club C2
+--						INNER JOIN Match M1 ON C2.id = M1.host_id
+--					WHERE C2.name = @clubName
+--				)
+--				UNION
+--				(
+--					SELECT M.host_id
+--					FROM Club C3
+--						INNER JOIN Match M2 ON C3.id = M2.guest_id
+--					WHERE C3.name = @clubName
+--				)
+--			)) as T 
+--				INNER JOIN Club C4 ON C4.id = all_ids
 
 
 --2.3 xxix
