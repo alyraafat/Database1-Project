@@ -80,7 +80,6 @@ AS
 		id INT IDENTITY,
 		start_time DATETIME,
 		end_time DATETIME,
---		allowed_num_of_attendees INT,
 		stadium_id INT,
 		host_id INT,
 		guest_id INT,
@@ -122,9 +121,9 @@ GO;
 Drop PROC createAllTables;
 EXEC createAllTables;
 
-insert into SystemUser values('sara.amr','sara123')
-insert into SystemUser values('malak.amer','malak123')
-insert into SystemUser values('ahmed.amer','ahmed123')
+insert into SystemUser(username,password) values('sara.amr','sara123')
+insert into SystemUser(username,password) values('malak.amer','malak123')
+insert into SystemUser(username,password) values('ahmed.amer','ahmed123')
 
 insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('812','sara.amr','01021112055','sara','7daye2',0,'01/05/2002')
 insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3428','malak.amer','01000981553','malak','nargis3',0,'8/12/2002')
@@ -139,62 +138,73 @@ insert into Club(name,location) values( 'Chelsea','London')
 insert into Club(name,location) values( 'Bayern Munich','Munich')
 insert into Club(name,location) values( 'Barcelona','Barcelona')
 
-insert into SystemUser values('shobeer','sara123')
-insert into SystemUser values('treka','malak123')
-insert into SystemUser values('owayran','ahmed123')
+insert into SystemUser(username,password) values('shobeer','sara123')
+insert into SystemUser(username,password) values('treka','malak123')
+insert into SystemUser(username,password) values('owayran','ahmed123')
 
 INSERT INTO SportsAssociationManager(username,name) VALUES ('shobeer','ahmed')
 INSERT INTO SportsAssociationManager(username,name) VALUES ('treka','mohamed')
 INSERT INTO SportsAssociationManager(username,name) VALUES ('owayran','saeed')
 
-insert into SystemUser values('haleem','haleem123')
-insert into SystemUser values('hamza','hamza123')
-insert into SystemUser values('hend','hend123')
+insert into SystemUser(username,password) values('haleem','haleem123')
+insert into SystemUser(username,password) values('hamza','hamza123')
+insert into SystemUser(username,password) values('hend','hend123')
 
 
 INSERT INTO SystemAdmin(username,name) VALUES('haleem','omar')
 INSERT INTO SystemAdmin(username,name) VALUES('hamza','aly')
 INSERT INTO SystemAdmin(username,name) VALUES('hend','henda')
 
-insert into SystemUser values('omar.ashraf','omar123')
-insert into SystemUser values('ali.3agamy','ali123')
-insert into SystemUser values('karim.gamaleldin','123')
+insert into SystemUser(username,password) values('omar.ashraf','omar123')
+insert into SystemUser(username,password) values('ali.3agamy','ali123')
+insert into SystemUser(username,password) values('karim.gamaleldin','123')
 
-insert into StadiumManager(username,name,status) values('omar.ashraf','omar',1)
-insert into StadiumManager(username,name,status) values('ali.3agamy','ali',2)
-insert into StadiumManager(username,name,status) values('karim.gamaleldin','Karim',3)
+insert into StadiumManager(username,name,stadium_id) values('omar.ashraf','omar',1)
+insert into StadiumManager(username,name,stadium_id) values('ali.3agamy','ali',2)
+insert into StadiumManager(username,name,stadium_id) values('karim.gamaleldin','Karim',3)
 
-insert into SystemUser values('mostafa.elkout','mostafa123')
-insert into SystemUser values('mirna.haitham','mirna123')
-insert into SystemUser values('pep.guardiola','pep123')
+insert into SystemUser(username,password) values('mostafa.elkout','mostafa123')
+insert into SystemUser(username,password) values('mirna.haitham','mirna123')
+insert into SystemUser(username,password) values('pep.guardiola','pep123')
 
 insert into ClubRepresentative(username,name,club_id) values('mostafa.elkout','mostafa',2)
 insert into ClubRepresentative(username,name,club_id) values('mirna.haitham','mirna',1)
 insert into ClubRepresentative(username,name,club_id) values('pep.guardiola','pep',3)
 
-insert into Match(start_time,end_time,) values('2022/10/10 9:45:00','2022/10/10 11:00:00',2,1,2)
-insert into Match values('2022/11/20 7:45:00','2022/11/20 9:00:00',1,3,2)
-insert into Match values('2022/9/11 8:00:00','2022/9/11 11:00:00',3,2,1)
+insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/10/10 9:45:00','2022/10/10 11:00:00',2,1,2)
+insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/11/20 7:45:00','2022/11/20 9:00:00',1,3,2)
+insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/9/11 8:00:00','2022/9/11 11:00:00',3,2,1)
 
-insert into Ticket values(1,1)
-insert into Ticket values(0,2)
-insert into Ticket values(1,3)
+insert into Ticket(status,match_id) values(1,1)
+insert into Ticket(status,match_id) values(0,2)
+insert into Ticket(status,match_id) values(1,3)
 
-insert into TicketBuyingTransactions values(3434,1);
-insert into TicketBuyingTransactions values(3428,2);
-insert into TicketBuyingTransactions values(812,3);
+insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('3434',1);
+insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('3428',2);
+insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('812',3);
 
-insert into HostRequest values (1,1,2,2) 
-insert into HostRequest values (0,2,1,3)
-insert into HostRequest values (1,3,3,1)
+insert into HostRequest(status,match_id,smd,crd) values ('accepted',1,2,2) 
+insert into HostRequest(status,match_id,smd,crd) values ('rejected',2,1,3)
+insert into HostRequest(status,match_id,smd,crd) values ('accepted',3,3,1)
 
+SELECT * FROM SystemUser;
+SELECT * FROM Stadium;
+SELECT * FROM Club;
+SELECT * FROM StadiumManager;
+SELECT * FROM ClubRepresentative;
+SELECT * FROM Fan;
+SELECT * FROM SportsAssociationManager;
+SELECT * FROM Match;
+SELECT * FROM Ticket;
+SELECT * FROM TicketBuyingTransactions;
+SELECT * FROM HostRequest;
 --Test inserting into stadiums
 INSERT INTO Stadium (name,capacity,location) VALUES
 ('camp nou',1000,'bar'),
 ('santiago',2000,'madrid'),
 ('2y neela',1000,'cairo');
 SELECT * FROM Stadium;
-
+SELECT * FROM Match
 --Test inserting into clubs
 INSERT INTO Club (name,location) VALUES
 ('barca','bar'),
@@ -300,8 +310,8 @@ GO;
 Drop PROC dropAllTables;
 EXEC dropAllTables;
 --DROP DATABASE FootballDB;
---EXEC sp_fkeys 'Stadium'
-
+EXEC sp_fkeys 'Stadium'
+DROP TABLE Matches 
 --2.1 c
 GO;
 CREATE PROC dropAllProceduresFunctionsViews
@@ -353,6 +363,7 @@ AS
 	matchesRankedByAttendance,
 	requestsFromClub;
 GO;
+EXEC dropAllProceduresFunctionsViews;
 
 --2.1 d
 GO;
