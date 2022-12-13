@@ -1002,7 +1002,7 @@ CREATE PROC deleteMatchOnStadium
 	WHERE S.name = @stadiumName
 
 	DELETE FROM Match
-	WHERE stadium_id = @stadiumId AND start_time>=CURRENT_TIMESTAMP
+	WHERE stadium_id = @stadiumId AND start_time>CURRENT_TIMESTAMP
 GO;
 
 --2.3 xxvi
@@ -1113,15 +1113,15 @@ CREATE FUNCTION matchesRankedByAttendance()
 	RETURNS TABLE
 	AS 
 	RETURN 
-		SELECT host.name , guest.name , COUNT(Mat.id)
+		SELECT host.name , guest.name , COUNT(COALESCE(TBT.ticket_id,0))
 		FROM Match Mat
 			INNER JOIN Club host on Mat.host_id = host.id
 			INNER JOIN Club guest on Mat.guest_id = guest.id
 			INNER JOIN Ticket T on T.match_id = Mat.id
-			INNER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
-		WHERE Mat.start_time < CURRENT_TIMESTAMP
+			LEFT OUTER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
+		WHERE Mat.end_time <= CURRENT_TIMESTAMP
 		GROUP BY host.name , guest.name, Mat.id
-		ORDER BY COUNT(Mat.id) DESC;
+		ORDER BY COUNT(COALESCE(TBT.ticket_id,0)) DESC;
 
 --2.3 xxxi
 GO;
