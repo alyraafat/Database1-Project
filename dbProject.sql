@@ -262,8 +262,9 @@ EXEC clearAllTables;
 --2.2 a
 GO;
 CREATE VIEW allAssocManagers AS
-	SELECT S.username , S.name
-	FROM SportsAssociationManager S;
+	SELECT S.username ,U.password ,S.name
+	FROM SportsAssociationManager S
+	INNER JOIN SystemUser U ON U.username = S.username;
 GO;
 
 --Test allAssocManagers
@@ -272,9 +273,11 @@ SELECT * FROM allAssocManagers;
 --2.2 b
 GO;
 CREATE VIEW allClubRepresentatives AS
-	SELECT R.username , R.name AS club_rep_name, C.name AS club_name
+	SELECT R.username , U.password ,R.name AS club_rep_name, C.name AS club_name
 	From ClubRepresentative R
 		INNER JOIN Club C ON C.id = R.club_id
+		INNER JOIN SystemUser U ON U.username = R.username;
+
 GO;
 --Test allClubRepresentatives
 SELECT * FROM ClubRepresentative;
@@ -285,20 +288,24 @@ SELECT * FROM allClubRepresentatives;
 --2.2 c
 GO;
 CREATE VIEW allStadiumManagers AS
-	SELECT M.username , M.name AS stadium_manager_name, S.name AS stadium_name
+	SELECT M.username , U.password,M.name AS stadium_manager_name, S.name AS stadium_name
 	FROM StadiumManager M
-		INNER JOIN Stadium S ON S.id = M.stadium_id ;
+		INNER JOIN Stadium S ON S.id = M.stadium_id
+		INNER JOIN SystemUser U ON U.username = M.username;
+
 
 --2.2 d
 GO;
 CREATE VIEW allFans AS
-	SELECT F.name , F.national_id , F.birth_date , F.status
+	SELECT F.username, U.password ,F.name , F.national_id , F.birth_date , F.status
 	From Fan F
+		INNER JOIN SystemUser U ON U.username = F.username;
+
 
 --2.2 e 
 GO; 
 CREATE VIEW allMatches AS
-	SELECT C1.name AS first_club_name, C2.name AS second_club_name, C1.name AS host_name , M.start_time
+	SELECT C1.name AS host_club , C2.name AS guest_club , M.start_time
 	FROM Matches M
 		INNER JOIN Club C1 ON C1.id = M.host_id 
 		INNER JOIN Club C2 ON C2.id = M.guest_id; 
@@ -306,7 +313,7 @@ CREATE VIEW allMatches AS
 --2.2 f
 GO; 
 CREATE VIEW allTickets AS 
-	SELECT H.name AS first_club_name, A.name AS second_club_name, S.name AS stadium_name , M.start_time
+	SELECT H.name AS host_club, A.name AS guest_club, S.name AS stadium_name , M.start_time
 	FROM Ticket T
 		INNER JOIN Matches M ON M.id = T.match_id 
 		INNER JOIN Club H ON H.id = M.host_id
@@ -328,7 +335,7 @@ CREATE VIEW allStadiums AS
 --2.2 i
 GO;
 CREATE VIEW allRequests AS 
-	SELECT CR.name AS club_rep_name, SM.name AS stadium_manager_name, R.status
+	SELECT CR.username AS club_rep_username, SM.username AS stadium_manager_username, R.status
 	FROM HostRequest R
 		INNER JOIN ClubRepresentative CR on CR.id = R.crd
 		INNER JOIN StadiumManager SM ON SM.id = R.smd
@@ -354,27 +361,23 @@ SELECT * FROM SportsAssociationManager
 --2.3 ii
 GO;
 CREATE PROC addNewMatch
-	@nameFirstClub VARCHAR(20),
-	@nameSecondClub VARCHAR(20),
-	@nameHostClub VARCHAR(20),
-	@time DATETIME
+	@hostclub VARCHAR(20),
+	@guestclub VARCHAR(20),
+	@starttime DATETIME,
+	@endtime DateTime
 	AS 
 
-	DECLARE @first INT
-	SELECT @first = C.id
+	DECLARE @host INT
+	SELECT @host = C.id
 	FROM Club C
-	WHERE C.name = @nameFirstClub;
+	WHERE C.name = @hostclub;
 
-	DECLARE @second INT
-	SELECT @second = C.id
+	DECLARE @guest INT
+	SELECT @guest = C.id
 	FROM Club C
-	Where C.name = @nameSecondClub;
-
-	IF @nameFirstClub = @nameHostClub
-		INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @first , @second)
-	ELSE
-		INSERT INTO MATCHES (start_time , host_id , guest_id) VALUES (@time , @second , @first)
-
+	Where C.name = @guestclub;
+	INSERT INTO MATCHES (start_time , host_id , guest_id,end_time) VALUES (@starttime , @host , @guest , @endtime);
+	
 -- Test addNewMatch
 --EXEC addNewMatch @nameFirstClub
 
@@ -401,28 +404,22 @@ CREATE VIEW clubsWithNoMatches AS
 --2.3 iv
 GO;
 CREATE PROC deleteMatch 
-	@namefirstclub VARCHAR(20),
-	@namesecondclub VARCHAR(20),
-	@namehostclub VARCHAR(20)
+	@namehostclub VARCHAR(20),
+	@nameguestclub VARCHAR(20)	
 	AS
 
-	DECLARE @first INT
-	SELECT @first = C.id
+	DECLARE @host INT
+	SELECT @host = C.id
 	FROM Club C
-	WHERE C.name = @nameFirstClub;
+	WHERE C.name = @namehostclub;
 
-	DECLARE @second INT
-	SELECT @second = C.id
+	DECLARE @guest INT
+	SELECT @guest = C.id
 	FROM Club C
-	Where C.name = @nameSecondClub;
+	Where C.name = @nameguestclub;
 
-	IF @nameFirstClub = @nameHostClub
-		DELETE FROM Matches 
-		WHERE (Matches.host_id = @first AND Matches.guest_id = @second) 
-
-	ELSE
-		DELETE FROM Matches 
-		WHERE (Matches.host_id = @second AND Matches.guest_id = @first) 
+	DELETE FROM Matches 
+	WHERE (Matches.host_id = @host AND Matches.guest_id = @guest) 
 
 --2.3 v
 GO;
