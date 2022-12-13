@@ -417,7 +417,6 @@ CREATE PROC deleteMatch
 	SELECT @guest = C.id
 	FROM Club C
 	Where C.name = @nameguestclub;
-
 	DELETE FROM Matches 
 	WHERE (Matches.host_id = @host AND Matches.guest_id = @guest) 
 
@@ -448,7 +447,7 @@ CREATE PROC addClub
 GO;
 CREATE PROC addTicket
 	@nameHostClub VARCHAR(20),
-	@nameCompetingClub VARCHAR(20),
+	@nameGuestClub VARCHAR(20),
 	@startTime DATETIME
 	AS
 
@@ -460,9 +459,7 @@ CREATE PROC addTicket
 	DECLARE @guestId INT
 	SELECT @guestId = C.id
 	FROM Club C
-	Where C.name = @nameCompetingClub;
-
-	INSERT INTO Matches(start_time,host_id,guest_id) VALUES (@startTime,@hostId,@guestId);
+	Where C.name = @nameGuestClub;
 
 	DECLARE @matchId INT
 	SELECT @matchId = M.id
@@ -664,9 +661,9 @@ GO;
 --2.3 xix
 CREATE PROC acceptRequest
 
-	@stadiumManagerName VARCHAR(20),
+	@stadiumManagerUserName VARCHAR(20),
 	@hostingClubName VARCHAR(20),
-	@competingClubName VARCHAR(20),
+	@guestClubName VARCHAR(20),
 	@matchStartTime VARCHAR(20)
 	AS
 
@@ -674,31 +671,31 @@ CREATE PROC acceptRequest
 	DECLARE @smd INT
 	SELECT @smd =  SM.id, @stadiumID = SM.stadium_id
 	FROM StadiumManager SM
-	WHERE SM.name = @stadiumManagerName
+	WHERE SM.username = @stadiumManagerUserName
 
 	DECLARE @hostId INT
 	SELECT @hostId = C.id
 	FROM Club C
 	WHERE C.name = @hostingClubName
 
-	DECLARE @competingId INT
-	SELECT @competingId = C.id
+	DECLARE @guestId INT
+	SELECT @guestId = C.id
 	FROM Club C
-	WHERE C.name = @competingClubName
+	WHERE C.name = @guestClubName
 	
 	DECLARE @requestId INT
 	SELECT @requestId = H.id
 	FROM HostRequest H 
 		INNER JOIN Matches M ON M.id = H.match_id
-	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd 
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId AND H.smd = @smd 
 	
 	UPDATE HostRequest
-	SET status='accepted'
+	SET status= 'accepted'
 	where id=@requestId
 
 	UPDATE Matches
 	SET stadium_id = @stadiumID
-	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId
 
 GO;
 DROP PROC acceptRequest;
@@ -706,32 +703,32 @@ DROP PROC acceptRequest;
 GO;
 CREATE PROC rejectRequest
 
-	@stadiumManagerName VARCHAR(20),
+	@stadiumManagerUserName VARCHAR(20),
 	@hostingClubName VARCHAR(20),
-	@competingClubName VARCHAR(20),
+	@guestClubName VARCHAR(20),
 	@matchStartTime VARCHAR(20)
 	AS
 
 	DECLARE @smd INT
 	SELECT @smd = SM.id
 	FROM StadiumManager SM
-	WHERE SM.name = @stadiumManagerName
+	WHERE SM.username = @stadiumManagerUserName
 
 	DECLARE @hostId INT
 	SELECT @hostId = C.id
 	FROM Club C
 	WHERE C.name = @hostingClubName
 
-	DECLARE @competingId INT
-	SELECT @competingId = C.id
+	DECLARE @guestId INT
+	SELECT @guestId = C.id
 	FROM Club C
-	WHERE C.name = @competingClubName
+	WHERE C.name = @guestClubName
 	
 	DECLARE @requestId INT
 	SELECT @requestId = H.id
 	FROM HostRequest H 
 		INNER JOIN Matches M ON M.id = H.match_id
-	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @competingId AND H.smd = @smd 
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId AND H.smd = @smd 
 	
 	UPDATE HostRequest
 	SET status='rejected'
@@ -783,9 +780,9 @@ CREATE FUNCTION availableMatchesToAttend (@date date)
 --2.3 xxiv
 GO;
 CREATE PROC purchaseTicket
-    @nationalidnumber int,
+    @nationalidnumber varchar(20),
 	@nameHostClub VARCHAR(20),
-	@nameCompetingClub VARCHAR(20),
+	@nameGuestClub VARCHAR(20),
 	@startTime DATETIME
 	AS
 
@@ -802,7 +799,7 @@ CREATE PROC purchaseTicket
 	DECLARE @guestId INT
 	SELECT @guestId = C.id
 	FROM Club C
-	Where C.name = @nameCompetingClub;
+	Where C.name = @nameGuestClub;
 
 	DECLARE @matchId INT
 	SELECT @matchId = M.id
@@ -837,7 +834,7 @@ GO;
 GO;
 CREATE PROC updateMatchHost
 	@nameHostClub VARCHAR(20),
-	@nameCompetingClub VARCHAR(20),
+	@nameGuestClub VARCHAR(20),
 	@startTime DATETIME
 	AS
 
@@ -849,7 +846,7 @@ CREATE PROC updateMatchHost
 	DECLARE @guestId INT
 	SELECT @guestId = C.id
 	FROM Club C
-	Where C.name = @nameCompetingClub;
+	Where C.name = @nameGuestClub;
 
 	DECLARE @matchId INT
 	SELECT @matchId = M.id
