@@ -311,7 +311,24 @@ AS
 	dropAllTables,
 	clearAllTables,
 	addAssociationManager,
-	addNewMatch
+	addNewMatch,
+	deleteMatch,
+	deleteMatchesOnStadium,
+	addClub,
+	addTicket,
+	deleteClub,
+	addStadium,
+	deleteStadium,
+	blockFan,
+	unblockFan,
+	addRepresentative,
+	addHostRequest,
+	addStadiumManager,
+	acceptRequest,
+	rejectRequest,
+	addFan,
+	purchaseTicket,
+	updateMatchHost;
 	DROP VIEW IF EXISTS
 	allAssocManagers,
 	allClubRepresentatives,
@@ -321,8 +338,20 @@ AS
 	allTickets,
 	allCLubs,
 	allStadiums,
-	allRequests
+	allRequests,
+	clubsWithNoMatches,
+	matchesPerTeam,
+	clubsNeverMatched;
 	DROP FUNCTION IF EXISTS
+	viewAvailableStadiumsOn,
+	allUnassignedMatches,
+	allPendingRequests,
+	upcomingMatchesOfClub,
+	availableMatchesToAttend,
+	clubsNeverPlayed,
+	matchWithHighestAttendance,
+	matchesRankedByAttendance,
+	requestsFromClub;
 GO;
 
 --2.1 d
@@ -1015,6 +1044,7 @@ CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 			FROM Match M
 			WHERE (M.host_id = C2.id AND M.guest_id = C1.id)
 		)
+
 --		SELECT C4.name 
 --		FROM ((
 --				SELECT C1.id AS all_ids
