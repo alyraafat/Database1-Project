@@ -51,7 +51,7 @@ AS
 	CREATE TABLE Fan(
 		username VARCHAR(20) UNIQUE,
 		national_id VARCHAR(20) UNIQUE,
-		phone VARCHAR(20),
+		phone INT,
 		name VARCHAR(20),
 		address VARCHAR(20),
 		status BIT DEFAULT 1, -- 1 means unblocked, 0 means blocked
@@ -125,9 +125,9 @@ insert into SystemUser(username,password) values('sara.amr','sara123')
 insert into SystemUser(username,password) values('malak.amer','malak123')
 insert into SystemUser(username,password) values('ahmed.amer','ahmed123')
 
-insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('812','sara.amr','01021112055','sara','7daye2',0,'01/05/2002')
-insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3428','malak.amer','01000981553','malak','nargis3',0,'8/12/2002')
-insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3434','ahmed.amer','01021112055','ahmed','nargis3',1,'8/12/2002')
+insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('812','sara.amr',01021112055,'sara','7daye2',0,'01/05/2002')
+insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3428','malak.amer',01000981553,'malak','nargis3',0,'8/12/2002')
+insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3434','ahmed.amer',01021112055,'ahmed','nargis3',1,'8/12/2002')
 
 
 insert into Stadium(name,status,location,capacity) values('Camp nou',1, 'Barcelona',80000)
@@ -339,12 +339,13 @@ AS
 	addFan,
 	purchaseTicket,
 	updateMatchHost;
+
 	DROP VIEW IF EXISTS
 	allAssocManagers,
 	allClubRepresentatives,
 	allStadiumManagers,
 	allFans,
-	allMatch,
+	allMatches,
 	allTickets,
 	allCLubs,
 	allStadiums,
@@ -352,6 +353,7 @@ AS
 	clubsWithNoMatches,
 	matchesPerTeam,
 	clubsNeverMatched;
+
 	DROP FUNCTION IF EXISTS
 	viewAvailableStadiumsOn,
 	allUnassignedMatches,
@@ -392,7 +394,7 @@ GO;
 CREATE VIEW allAssocManagers AS
 	SELECT S.username ,U.password ,S.name
 	FROM SportsAssociationManager S
-	INNER JOIN SystemUser U ON U.username = S.username;
+		INNER JOIN SystemUser U ON U.username = S.username;
 GO;
 
 --Test allAssocManagers
@@ -420,7 +422,9 @@ CREATE VIEW allStadiumManagers AS
 	FROM StadiumManager M
 		INNER JOIN Stadium S ON S.id = M.stadium_id
 		INNER JOIN SystemUser U ON U.username = M.username;
-
+GO;
+--Test allStadiumManagers
+SELECT * FROM allStadiumManagers;
 
 --2.2 d
 GO;
@@ -428,15 +432,20 @@ CREATE VIEW allFans AS
 	SELECT F.username, U.password ,F.name , F.national_id , F.birth_date , F.status
 	From Fan F
 		INNER JOIN SystemUser U ON U.username = F.username;
-
+GO;
+--Test allFans
+SELECT * FROM allFans;
 
 --2.2 e 
 GO; 
-CREATE VIEW allMatch AS
+CREATE VIEW allMatches AS
 	SELECT C1.name AS host_club , C2.name AS guest_club , M.start_time
 	FROM Match M
 		INNER JOIN Club C1 ON C1.id = M.host_id 
 		INNER JOIN Club C2 ON C2.id = M.guest_id; 
+GO;
+--Test allMatches
+SELECT * FROM allMatches;
 
 --2.2 f
 GO; 
@@ -447,18 +456,27 @@ CREATE VIEW allTickets AS
 		INNER JOIN Club H ON H.id = M.host_id
 		INNER JOIN CLUB A ON A.id = M.guest_id
 		INNER JOIN Stadium S on S.id = M.stadium_id;
+GO;
+--Test allTickets
+SELECT * FROM allTickets;
 
 --2.2 g
 GO;
 CREATE VIEW allCLubs AS
 	SELECT C.name , C.location
 	FROM Club C
+GO;
+--Test allCLubs
+SELECT * FROM allCLubs;
 
 --2.2 h
 GO; 
 CREATE VIEW allStadiums AS
 	SELECT S.name , S.location , S.capacity , S.status 
 	From Stadium S
+GO;
+--Test allStadiums
+SELECT * FROM allStadiums;
 
 --2.2 i
 GO;
@@ -469,6 +487,8 @@ CREATE VIEW allRequests AS
 		INNER JOIN StadiumManager SM ON SM.id = R.smd
 GO;
 DROP VIEW allRequests;
+--Test allRequests
+SELECT * FROM allRequests;
 -------------------------------------------------------------------
 
 --2.3 i
@@ -1115,10 +1135,13 @@ CREATE FUNCTION matchesRankedByAttendance()
 	RETURN 
 		SELECT host.name , guest.name , COUNT(COALESCE(TBT.ticket_id,0))
 		FROM Match Mat
-			INNER JOIN Club host on Mat.host_id = host.id
-			INNER JOIN Club guest on Mat.guest_id = guest.id
-			INNER JOIN Ticket T on T.match_id = Mat.id
-			LEFT OUTER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
+			INNER JOIN Club host ON Mat.host_id = host.id
+			INNER JOIN Club guest ON Mat.guest_id = guest.id
+			LEFT OUTER JOIN 
+			(
+			Ticket T
+				INNER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
+			) ON T.match_id = Mat.id
 		WHERE Mat.end_time <= CURRENT_TIMESTAMP
 		GROUP BY host.name , guest.name, Mat.id
 		ORDER BY COUNT(COALESCE(TBT.ticket_id,0)) DESC;
