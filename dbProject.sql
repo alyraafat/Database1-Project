@@ -498,9 +498,19 @@ CREATE PROC addAssociationManager
 	@username VARCHAR(20),
 	@password VARCHAR(20)
 	AS
-
-	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
-	INSERT INTO SportsAssociationManager(username, name) VALUES (@username , @name);
+	IF NOT EXISTS (
+		SELECT * 
+		FROM SystemUser S 
+		WHERE S.username = @username
+	)
+	BEGIN
+		INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+		INSERT INTO SportsAssociationManager(username, name) VALUES (@username , @name);
+	END
+	ELSE
+	BEGIN
+		PRINT 'This User is already in the Database.';
+	END
 GO;
 DROP PROC addAssociationManager;
 --Test addAssociationManager
@@ -698,9 +708,19 @@ CREATE PROC addRepresentative
 	SELECT @clubId = C.id
 	FROM Club C
 	WHERE C.name = @clubName
-
-	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
-	INSERT INTO ClubRepresentative (username,name,club_id) VALUES (@username,@repName,@clubId);
+	IF NOT EXISTS (
+		SELECT * 
+		FROM SystemUser S 
+		WHERE S.username = @username
+	)
+	BEGIN
+		INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+		INSERT INTO ClubRepresentative (username,name,club_id) VALUES (@username,@repName,@clubId);
+	END
+	ELSE
+	BEGIN
+		PRINT 'This User is already in the Database.';
+	END
 GO;
 DROP PROC addRepresentative;
 --2.3 xiv
@@ -784,9 +804,20 @@ CREATE PROC addStadiumManager
 	SELECT @stadiumId = S.id
 	FROM Stadium S
 	WHERE S.name = @stadiumName
+	IF NOT EXISTS (
+		SELECT * 
+		FROM SystemUser S 
+		WHERE S.username = @username
+	)
+	BEGIN
+		INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+		INSERT INTO StadiumManager(username,name,stadium_id) VALUES (@username,@name,@stadiumId);
+	END
+	ELSE
+	BEGIN
+		PRINT 'This User is already in the Database.';
+	END
 	
-	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
-	INSERT INTO StadiumManager(username,name,stadium_id) VALUES (@username,@name,@stadiumId);
 
 GO;
 DROP PROC addStadiumManager;
@@ -864,6 +895,7 @@ CREATE PROC acceptRequest
 	SELECT @capacity = S.capacity 
 	FROM Stadium S
 	WHERE s.id = @stadiumID ;
+
 	SET @counter = 1
 	WHILE (@counter <= @capacity)
 	BEGIN
@@ -920,9 +952,20 @@ CREATE PROC addFan
 	@address VARCHAR(20),
 	@phoneNumber int
 	AS
+	IF NOT EXISTS (
+		SELECT * 
+		FROM SystemUser S 
+		WHERE S.username = @username
+	)
+	BEGIN
+		INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+		INSERT INTO Fan(username,name,national_id,birth_date,address,phone) VALUES (@username,@name,@nationalIdNumber,@birthDate,@address,@phoneNumber);
+	END
+	ELSE
+	BEGIN
+		PRINT 'This User is already in the Database.';
+	END
 
-	INSERT INTO SystemUser(username,password) VALUES (@username,@password);
-	INSERT INTO Fan(username,name,national_id,birth_date,address,phone) VALUES (@username,@name,@nationalIdNumber,@birthDate,@address,@phoneNumber);
 GO;
 DROP PROC addFan;
 --2.3 xxii 
