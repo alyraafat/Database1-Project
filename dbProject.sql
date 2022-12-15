@@ -86,7 +86,7 @@ AS
 		CONSTRAINT pk_Match PRIMARY KEY(id),
 		FOREIGN KEY(host_id) REFERENCES Club(id) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(guest_id) REFERENCES Club(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE CASCADE ON UPDATE CASCADE
+		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE SET NULL ON UPDATE SET NULL
 	);
 
 	CREATE TABLE Ticket(
@@ -631,6 +631,9 @@ CREATE PROC deleteClub
 	DELETE FROM Club
 	WHERE Club.id = @id;
 
+	DELETE FROM Match
+	WHERE guest_id = @id
+
 --2.3 ix
 GO;
 CREATE PROC addStadium
@@ -651,6 +654,13 @@ CREATE PROC deleteStadium
 	SELECT @id = S.id
 	FROM Stadium S
 	WHERE S.name = @stadiumName;
+	
+	DELETE FROM Ticket
+	WHERE match_id IN (
+		SELECT id
+		FROM Match
+		WHERE stadium_id = @id AND start_time>CURRENT_TIMESTAMP
+	)
 
 	DELETE FROM Stadium 
 	WHERE Stadium.id = @id;
@@ -1006,7 +1016,7 @@ CREATE PROC updateMatchHost
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
 
 	UPDATE Match
-	SET host_id= @guestId, guest_id=@hostId
+	SET host_id= @guestId, guest_id=@hostId, stadium_id = NULL
 	WHERE host_id=@hostId AND guest_id=@guestId
 GO;
 
@@ -1144,7 +1154,8 @@ CREATE FUNCTION matchesRankedByAttendance()
 			) ON T.match_id = Mat.id
 		WHERE Mat.end_time <= CURRENT_TIMESTAMP
 		GROUP BY host.name , guest.name, Mat.id
-		ORDER BY COUNT(COALESCE(TBT.ticket_id,0)) DESC;
+		ORDER BY COUNT(COALESCE(TBT.ticket_id,0)) DESC
+		OFFSET 0 ROWS
 
 --2.3 xxxi
 GO;
