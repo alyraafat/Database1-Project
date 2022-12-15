@@ -847,7 +847,11 @@ CREATE PROC acceptRequest
 	FROM HostRequest H 
 		INNER JOIN Match M ON M.id = H.match_id
 	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId AND H.smd = @smd 
-	
+
+	DECLARE @matchID INT 
+	SELECT @matchID = M.id
+	FROM Match M
+	where start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId AND H.smd = @smd 
 	UPDATE HostRequest
 	SET status= 'accepted'
 	where id=@requestId
@@ -855,6 +859,16 @@ CREATE PROC acceptRequest
 	UPDATE Match
 	SET stadium_id = @stadiumID
 	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId
+
+	DECLARE @capacity INT
+	SELECT @capacity = S.capacity 
+	FROM Stadium S
+	WHERE s.id = @stadiumID ;
+	SET @counter = 1
+	WHILE (@counter <= @capacity)
+	BEGIN
+		INSERT INTO Ticket (match_id) VALUES(@matchID);
+	END
 
 GO;
 DROP PROC acceptRequest;
