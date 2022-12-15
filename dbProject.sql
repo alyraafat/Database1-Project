@@ -1006,7 +1006,7 @@ CREATE PROC purchaseTicket
 	@startTime DATETIME
 	AS
 
-	DECLARE @username INT
+	DECLARE @username varchar(20)
 	SELECT @username = F.username
 	FROM Fan F
 	WHERE F.national_id = @nationalidnumber;
@@ -1047,9 +1047,18 @@ CREATE PROC purchaseTicket
 		SET status = 0
 		WHERE status = 1 AND id = @ticketId
 	END
+
 	
 
 GO;
+DROP PROC purchaseTicket;
+
+EXEC purchaseTicket @nationalidnumber = '3434',
+					@nameHostClub = 'Chelsea',
+					@nameGuestClub = 'Bayern Munich',
+					@startTime = '2022/10/10 09:45:00'
+Select * 
+FROM Ticket
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
