@@ -86,7 +86,7 @@ AS
 		CONSTRAINT pk_Match PRIMARY KEY(id),
 		FOREIGN KEY(host_id) REFERENCES Club(id) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY(guest_id) REFERENCES Club(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE SET NULL ON UPDATE SET NULL
+		FOREIGN KEY(stadium_id) REFERENCES Stadium(id) ON DELETE SET NULL ON UPDATE CASCADE
 	);
 
 	CREATE TABLE Ticket(
@@ -396,7 +396,6 @@ CREATE VIEW allAssocManagers AS
 	FROM SportsAssociationManager S
 		INNER JOIN SystemUser U ON U.username = S.username;
 GO;
-
 --Test allAssocManagers
 SELECT * FROM allAssocManagers;
 
@@ -444,6 +443,7 @@ CREATE VIEW allMatches AS
 		INNER JOIN Club C1 ON C1.id = M.host_id 
 		INNER JOIN Club C2 ON C2.id = M.guest_id; 
 GO;
+DROP VIEW allMatches;
 --Test allMatches
 SELECT * FROM allMatches;
 
