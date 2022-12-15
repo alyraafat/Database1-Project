@@ -868,6 +868,7 @@ CREATE PROC acceptRequest
 	WHILE (@counter <= @capacity)
 	BEGIN
 		INSERT INTO Ticket (match_id) VALUES(@matchID);
+		SET @counter = @counter+1;
 	END
 
 GO;
