@@ -1076,15 +1076,9 @@ CREATE PROC purchaseTicket
 		SET status = 0
 		WHERE status = 1 AND id = @ticketId
 	END
+	
+
 GO;
-DROP PROC purchaseTicket
-SELECT * FROM TicketBuyingTransactions
-SELECT * FROM Ticket
-EXEC purchaseTicket 
-	@nationalidnumber='3428' ,
-	@nameHostClub='Chelsea' ,
-	@nameGuestClub='Bayern Munich' ,
-	@startTime='2022/10/10 09:45:00'
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
