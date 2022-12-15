@@ -1077,6 +1077,9 @@ CREATE PROC purchaseTicket
 		WHERE status = 1 AND id = @ticketId
 	END
 GO;
+DROP PROC purchaseTicket
+SELECT * FROM TicketBuyingTransactions
+SELECT * FROM Ticket
 EXEC purchaseTicket 
 	@nationalidnumber='3428' ,
 	@nameHostClub='Chelsea' ,
