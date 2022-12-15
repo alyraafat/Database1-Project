@@ -514,8 +514,10 @@ CREATE PROC addAssociationManager
 GO;
 DROP PROC addAssociationManager;
 --Test addAssociationManager
-EXEC addAssociationManager @name = 'abbas', @username = 'zzz', @password='4343'
+EXEC addAssociationManager @name = 'basel', @username = 'biso.farouk', @password='4343'
 SELECT * FROM SportsAssociationManager
+SELECT * FROM SystemUser
+DELETE FROM SportsAssociationManager WHERE username = 'ali.3agamy'
 --2.3 ii
 GO;
 CREATE PROC addNewMatch
@@ -535,10 +537,10 @@ CREATE PROC addNewMatch
 	FROM Club C
 	Where C.name = @guestclub;
 	INSERT INTO Match (start_time , host_id , guest_id,end_time) VALUES (@starttime , @host , @guest , @endtime);
-	
--- Test addNewMatch
---EXEC addNewMatch @nameFirstClub
 
+DROP PROC addNewMatch
+-- Test addNewMatch
+EXEC addNewMatch @hostclub='Barcelona' ,@guestclub='Chelsea', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
 SELECT * FROM Match;
 --2.3 iii
 GO;
@@ -772,8 +774,9 @@ CREATE PROC addHostRequest
 
 GO;
 DROP PROC addHostRequest;
-
-
+EXEC addHostRequest @clubName='Barcelona',@stadiumName='Camp nou',@startTime='2022/12/20 05:00:00'
+SELECT * FROM Match;
+SELECT * FROM HostRequest;
 --2.3 xvi
 GO;
 CREATE FUNCTION allUnassignedMatches(@clubName VARCHAR(20))
@@ -850,7 +853,6 @@ SELECT * FROM [dbo].allPendingRequests('fffffff');
 GO;
 --2.3 xix
 CREATE PROC acceptRequest
-
 	@stadiumManagerUserName VARCHAR(20),
 	@hostingClubName VARCHAR(20),
 	@guestClubName VARCHAR(20),
@@ -882,7 +884,8 @@ CREATE PROC acceptRequest
 	DECLARE @matchID INT 
 	SELECT @matchID = M.id
 	FROM Match M
-	where start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId AND H.smd = @smd 
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId
+	
 	UPDATE HostRequest
 	SET status= 'accepted'
 	where id=@requestId
@@ -896,15 +899,22 @@ CREATE PROC acceptRequest
 	FROM Stadium S
 	WHERE s.id = @stadiumID ;
 
+	DECLARE @counter INT
 	SET @counter = 1
 	WHILE (@counter <= @capacity)
 	BEGIN
 		INSERT INTO Ticket (match_id) VALUES(@matchID);
 		SET @counter = @counter+1;
 	END
-
 GO;
 DROP PROC acceptRequest;
+EXEC acceptRequest 
+	@stadiumManagerUserName='omar.ashraf',
+	@hostingClubName='Barcelona',
+	@guestClubName='Chelsea' ,
+	@matchStartTime ='2022/12/20 05:00:00' 
+SELECT * FROM Match
+SELECT * FROM Ticket
 --2.3 xx
 GO;
 CREATE PROC rejectRequest
@@ -939,7 +949,25 @@ CREATE PROC rejectRequest
 	UPDATE HostRequest
 	SET status='rejected'
 	where id=@requestId
+
+	UPDATE Match
+	SET stadium_id = NULL
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId
+	
+	DECLARE @matchId INT
+	SELECT @matchId = id
+	FROM Match
+	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId
+	
+	DELETE FROM Ticket
+	WHERE match_id = @matchId
 GO;
+DROP PROC rejectRequest;
+EXEC rejectRequest 
+	@stadiumManagerUserName='omar.ashraf',
+	@hostingClubName='Barcelona',
+	@guestClubName='Chelsea' ,
+	@matchStartTime ='2022/12/20 05:00:00'
 
 --2.3 xxi
 GO;
@@ -950,7 +978,7 @@ CREATE PROC addFan
 	@nationalIdNumber VARCHAR(20),
 	@birthDate date,
 	@address VARCHAR(20),
-	@phoneNumber int
+	@phoneNumber INT
 	AS
 	IF NOT EXISTS (
 		SELECT * 
@@ -965,7 +993,6 @@ CREATE PROC addFan
 	BEGIN
 		PRINT 'This User is already in the Database.';
 	END
-
 GO;
 DROP PROC addFan;
 --2.3 xxii 
@@ -996,7 +1023,9 @@ CREATE FUNCTION availableMatchesToAttend (@date DATETIME)
 			INNER JOIN Stadium S on S.id=M.stadium_id
 			INNER JOIN Ticket T on T.match_id=M.id
 		WHERE T.status=1 AND M.start_time>=@date
-
+GO;
+SELECT * FROM [dbo].availableMatchesToAttend('2022/09/11')
+SELECT * FROM Ticket
 --2.3 xxiv
 GO;
 CREATE PROC purchaseTicket
@@ -1006,7 +1035,7 @@ CREATE PROC purchaseTicket
 	@startTime DATETIME
 	AS
 
-	DECLARE @username INT
+	DECLARE @username VARCHAR(20)
 	SELECT @username = F.username
 	FROM Fan F
 	WHERE F.national_id = @nationalidnumber;
@@ -1047,9 +1076,12 @@ CREATE PROC purchaseTicket
 		SET status = 0
 		WHERE status = 1 AND id = @ticketId
 	END
-	
-
 GO;
+EXEC purchaseTicket 
+	@nationalidnumber='3428' ,
+	@nameHostClub='Chelsea' ,
+	@nameGuestClub='Bayern Munich' ,
+	@startTime='2022/10/10 09:45:00'
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
