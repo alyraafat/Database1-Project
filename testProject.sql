@@ -15,6 +15,7 @@ insert into Club(name,location) values( 'Chelsea','London')
 insert into Club(name,location) values( 'Bayern Munich','Munich')
 insert into Club(name,location) values( 'Barcelona','Barcelona')
 
+
 insert into SystemUser(username,password) values('shobeer','sara123')
 insert into SystemUser(username,password) values('treka','malak123')
 insert into SystemUser(username,password) values('owayran','ahmed123')
@@ -52,9 +53,11 @@ insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/
 insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/11/20 7:45:00','2022/11/20 9:00:00',1,3,2)
 insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/9/11 8:00:00','2022/9/11 11:00:00',3,2,1)
 
+
 insert into Ticket(status,match_id) values(1,1)
 insert into Ticket(status,match_id) values(0,2)
 insert into Ticket(status,match_id) values(1,3)
+
 
 insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('3434',1);
 insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('3428',2);

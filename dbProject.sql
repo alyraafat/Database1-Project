@@ -514,6 +514,13 @@ CREATE PROC deleteStadium
 	DELETE FROM Stadium 
 	WHERE Stadium.id = @id;
 
+GO;
+EXEC deleteStadium @stadiumName = 'Camp nou';
+
+SELECT * FROM Stadium;
+SELECT * FROM Match;
+SELECT * FROM Ticket;
+
 --2.3 xi
 GO;
 CREATE PROC blockFan
@@ -547,20 +554,42 @@ CREATE PROC addRepresentative
 	SELECT @clubId = C.id
 	FROM Club C
 	WHERE C.name = @clubName
-	IF NOT EXISTS (
-		SELECT * 
-		FROM SystemUser S 
-		WHERE S.username = @username
-	)
+	IF (@clubId IS NOT NULL)
+		IF NOT EXISTS (
+			SELECT * 
+			FROM SystemUser S 
+			WHERE S.username = @username
+		)
+		BEGIN
+		IF NOT EXISTS (
+			SELECT *
+			FROM ClubRepresentative C
+			WHERE C.club_id = @clubId
+		)
+			BEGIN
+				INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+				INSERT INTO ClubRepresentative (username,name,club_id) VALUES (@username,@repName,@clubId);
+			END
+			ELSE
+			BEGIN
+				PRINT 'This Club already has a Club Representative.';
+			END
+		END
+		ELSE
+		BEGIN
+			PRINT 'This User is already in the Database.';
+		END
+	ELSE 
 	BEGIN
-		INSERT INTO SystemUser(username,password) VALUES (@username,@password);
-		INSERT INTO ClubRepresentative (username,name,club_id) VALUES (@username,@repName,@clubId);
-	END
-	ELSE
-	BEGIN
-		PRINT 'This User is already in the Database.';
+		PRINT 'This Club isnot in our Database.';
 	END
 GO;
+EXEC addRepresentative  @repName = 'kimo',
+						@clubName= 'Alahly',
+						@username= 'karifsgsdm.gamaleldin',
+						@password='1234'
+SELECT * FROM ClubRepresentative;
+SELECT * FROM SystemUser;
 DROP PROC addRepresentative;
 --2.3 xiv
 GO;
@@ -579,7 +608,7 @@ GO;
 --Test viewAvailableStadiumsOn
 SELECT * FROM Stadium;
 SELECT * FROM Match;
-SELECt * FROM [dbo].viewAvailableStadiumsOn('2022/10/28');
+SELECt * FROM [dbo].viewAvailableStadiumsOn('2022/11/20');
 
 --2.3 xv
 GO;
@@ -627,9 +656,11 @@ CREATE FUNCTION allUnassignedMatches(@clubName VARCHAR(20))
 			INNER JOIN Club C2 ON C2.id = M.guest_id
 		WHERE M.stadium_id IS NULL AND @clubName = C1.name
 GO;
+SELECT * FROM MATCH ;
+SELECT * FROM Stadium;
 
 --Test allUnassignedMatch
-SELECT * FROM [dbo].allUnassignedMatch('barca');
+SELECT * FROM [dbo].allUnassignedMatches('Chelsea');
 
 --2.3 xvii
 GO;
@@ -644,28 +675,46 @@ CREATE PROC addStadiumManager
 	SELECT @stadiumId = S.id
 	FROM Stadium S
 	WHERE S.name = @stadiumName
-	IF NOT EXISTS (
-		SELECT * 
-		FROM SystemUser S 
-		WHERE S.username = @username
-	)
+
+	IF (@stadiumId is NOT NULL)
 	BEGIN
-		INSERT INTO SystemUser(username,password) VALUES (@username,@password);
-		INSERT INTO StadiumManager(username,name,stadium_id) VALUES (@username,@name,@stadiumId);
+		IF NOT EXISTS (
+			SELECT * 
+			FROM SystemUser S 
+			WHERE S.username = @username
+		)
+		BEGIN
+		IF NOT EXISTS (
+			SELECT *
+			FROM StadiumManager SM
+			WHERE SM.stadium_id = @stadiumId
+		)
+			BEGIN
+				INSERT INTO SystemUser(username,password) VALUES (@username,@password);
+				INSERT INTO StadiumManager(username,name,stadium_id) VALUES (@username,@name,@stadiumId)
+			END
+			ELSE
+			BEGIN
+				PRINT 'This Stadium already has a Stadium Manager.';
+			END
+		END
+		ELSE
+		BEGIN
+			PRINT 'This User is already in the Database.';
+		END
 	END
 	ELSE
-	BEGIN
-		PRINT 'This User is already in the Database.';
+	BEGIN 
+	PRINT 'This Stadium isnot in our database'
 	END
-	
-
 GO;
 DROP PROC addStadiumManager;
 
 --Test addStadiumManager
-EXEC addStadiumManager @name='lol',@stadiumName='2y neela',@username='fffffff',@password='1234';
+EXEC addStadiumManager @name='lol',@stadiumName='Borg alarab',@username='karim.gamaleldin2',@password='1234';
 SELECT * FROM Stadium;
 SELECT * FROM StadiumManager;
+SELECT * FROM SystemUser;
 
 --2.3 xviii
 GO;
@@ -862,8 +911,9 @@ CREATE FUNCTION availableMatchesToAttend (@date DATETIME)
 			INNER JOIN Ticket T on T.match_id=M.id
 		WHERE T.status=1 AND M.start_time>=@date
 GO;
-SELECT * FROM [dbo].availableMatchesToAttend('2022/09/11')
+SELECT * FROM [dbo].availableMatchesToAttend('2022/09/12')
 SELECT * FROM Ticket
+SELECT * FROM Match;
 --2.3 xxiv
 GO;
 CREATE PROC purchaseTicket
@@ -874,9 +924,11 @@ CREATE PROC purchaseTicket
 	AS
 
 	DECLARE @username VARCHAR(20)
-	SELECT @username = F.username
+	DECLARE @fanstatus BIT
+	SELECT @username = F.username,@fanstatus = F.status
 	FROM Fan F
 	WHERE F.national_id = @nationalidnumber;
+
 
 	DECLARE @hostId INT
 	SELECT @hostId = C.id
@@ -893,36 +945,62 @@ CREATE PROC purchaseTicket
 	FROM Match M
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
 	
-	IF NOT EXISTS(
-		SELECT id 
-		FROM Ticket
-		WHERE status = 1 AND match_id = @matchId 
-	)
+	IF @username is NOT NULL
 	BEGIN
-		PRINT 'No tickets available'
+		IF @matchId IS NOT NULL
+		BEGIN
+			IF @fanstatus = 1
+			BEGIN
+				IF NOT EXISTS(
+					SELECT T.id
+					FROM Ticket T
+					WHERE T.status = 1 AND T.match_id = @matchId
+				)
+				BEGIN
+					PRINT 'There is no tickets available';
+				END
+				ELSE 
+				BEGIN
+					DECLARE @ticketId INT
+					SELECT TOP 1 @ticketId = id 
+					FROM Ticket
+					WHERE status = 1 AND match_id = @matchId 
+
+					INSERT INTO TicketBuyingTransactions VALUES (@nationalidnumber,@ticketId);
+
+					UPDATE TICKET 
+					SET status = 0
+					WHERE status = 1 AND id = @ticketId
+				END
+			END
+			ELSE
+			BEGIN
+				PRINT 'This User is Blocked';
+			END
+		END
+		ELSE
+		BEGIN
+			PRINT 'There is no match with the given information';
+		END
 	END
-	ELSE 
+	ELSE
 	BEGIN
-		DECLARE @ticketId INT
-		SELECT TOP 1 @ticketId = id 
-		FROM Ticket
-		WHERE status = 1 AND match_id = @matchId 
-
-		INSERT INTO TicketBuyingTransactions VALUES (@nationalidnumber,@ticketId);
-
-		UPDATE TICKET 
-		SET status = 0
-		WHERE status = 1 AND id = @ticketId
+		PRINT 'This Username isnot in the Database';
 	END
+
+
 GO;
+DROP PROC purchaseTicket;
 SELECT * FROM Ticket
 SELECT * FROM TicketBuyingTransactions
-INSERT INTO TicketBuyingTransactions VALUES ('812',4)
+DELETE FROM TicketBuyingTransactions;
+INSERT INTO Ticket Values (1,1)
+SELECT * FROM fan;
 EXEC purchaseTicket 
-	@nationalidnumber='812',
-	@nameHostClub='Barcelona',
+	@nationalidnumber= '3434',
+	@nameHostClub='Chelsea',
 	@nameGuestClub='Bayern Munich',
-	@startTime='2022/11/20 07:45:00'
+	@startTime='2022/10/10 09:45:00'
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
