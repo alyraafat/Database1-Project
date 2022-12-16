@@ -14,7 +14,7 @@ AS
 
 	CREATE TABLE Stadium(
 		id INT IDENTITY,
-		name VARCHAR(20),
+		name VARCHAR(20) UNIQUE,
 		capacity INT,
 		location VARCHAR(20),
 		status BIT DEFAULT 1, -- 1 means available, 0 means unavailable
@@ -23,7 +23,7 @@ AS
 
 	CREATE TABLE Club(
 		id INT IDENTITY,
-		name VARCHAR(20),
+		name VARCHAR(20) UNIQUE,
 		location VARCHAR(20),
 		CONSTRAINT pk_club PRIMARY KEY(id)
 	);
@@ -120,174 +120,6 @@ AS
 GO;
 Drop PROC createAllTables;
 EXEC createAllTables;
-
-insert into SystemUser(username,password) values('sara.amr','sara123')
-insert into SystemUser(username,password) values('malak.amer','malak123')
-insert into SystemUser(username,password) values('ahmed.amer','ahmed123')
-
-insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('812','sara.amr',01021112055,'sara','7daye2',0,'01/05/2002')
-insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3428','malak.amer',01000981553,'malak','nargis3',0,'8/12/2002')
-insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3434','ahmed.amer',01021112055,'ahmed','nargis3',1,'8/12/2002')
-
-
-insert into Stadium(name,status,location,capacity) values('Camp nou',1, 'Barcelona',80000)
-insert into Stadium(name,status,location,capacity) values('Stamford bridge',1, 'London',45000)
-insert into Stadium(name,status,location,capacity) values('Allianz arena',0, 'Munich',70000)
-
-insert into Club(name,location) values( 'Chelsea','London')
-insert into Club(name,location) values( 'Bayern Munich','Munich')
-insert into Club(name,location) values( 'Barcelona','Barcelona')
-
-insert into SystemUser(username,password) values('shobeer','sara123')
-insert into SystemUser(username,password) values('treka','malak123')
-insert into SystemUser(username,password) values('owayran','ahmed123')
-
-INSERT INTO SportsAssociationManager(username,name) VALUES ('shobeer','ahmed')
-INSERT INTO SportsAssociationManager(username,name) VALUES ('treka','mohamed')
-INSERT INTO SportsAssociationManager(username,name) VALUES ('owayran','saeed')
-
-insert into SystemUser(username,password) values('haleem','haleem123')
-insert into SystemUser(username,password) values('hamza','hamza123')
-insert into SystemUser(username,password) values('hend','hend123')
-
-
-INSERT INTO SystemAdmin(username,name) VALUES('haleem','omar')
-INSERT INTO SystemAdmin(username,name) VALUES('hamza','aly')
-INSERT INTO SystemAdmin(username,name) VALUES('hend','henda')
-
-insert into SystemUser(username,password) values('omar.ashraf','omar123')
-insert into SystemUser(username,password) values('ali.3agamy','ali123')
-insert into SystemUser(username,password) values('karim.gamaleldin','123')
-
-insert into StadiumManager(username,name,stadium_id) values('omar.ashraf','omar',1)
-insert into StadiumManager(username,name,stadium_id) values('ali.3agamy','ali',2)
-insert into StadiumManager(username,name,stadium_id) values('karim.gamaleldin','Karim',3)
-
-insert into SystemUser(username,password) values('mostafa.elkout','mostafa123')
-insert into SystemUser(username,password) values('mirna.haitham','mirna123')
-insert into SystemUser(username,password) values('pep.guardiola','pep123')
-
-insert into ClubRepresentative(username,name,club_id) values('mostafa.elkout','mostafa',2)
-insert into ClubRepresentative(username,name,club_id) values('mirna.haitham','mirna',1)
-insert into ClubRepresentative(username,name,club_id) values('pep.guardiola','pep',3)
-
-insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/10/10 9:45:00','2022/10/10 11:00:00',2,1,2)
-insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/11/20 7:45:00','2022/11/20 9:00:00',1,3,2)
-insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/9/11 8:00:00','2022/9/11 11:00:00',3,2,1)
-
-insert into Ticket(status,match_id) values(1,1)
-insert into Ticket(status,match_id) values(0,2)
-insert into Ticket(status,match_id) values(1,3)
-
-insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('3434',1);
-insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('3428',2);
-insert into TicketBuyingTransactions(fan_national_id,ticket_id) values('812',3);
-
-insert into HostRequest(status,match_id,smd,crd) values ('accepted',1,2,2) 
-insert into HostRequest(status,match_id,smd,crd) values ('rejected',2,1,3)
-insert into HostRequest(status,match_id,smd,crd) values ('accepted',3,3,1)
-
-SELECT * FROM SystemUser;
-SELECT * FROM Stadium;
-SELECT * FROM Club;
-SELECT * FROM StadiumManager;
-SELECT * FROM ClubRepresentative;
-SELECT * FROM Fan;
-SELECT * FROM SportsAssociationManager;
-SELECT * FROM Match;
-SELECT * FROM Ticket;
-SELECT * FROM TicketBuyingTransactions;
-SELECT * FROM HostRequest;
---Test inserting into stadiums
-INSERT INTO Stadium (name,capacity,location) VALUES
-('camp nou',1000,'bar'),
-('santiago',2000,'madrid'),
-('2y neela',1000,'cairo');
-SELECT * FROM Stadium;
-SELECT * FROM Match
---Test inserting into clubs
-INSERT INTO Club (name,location) VALUES
-('barca','bar'),
-('real madrid','madrid'),
-('ahly','cairo');
-SELECT * FROM Club;
-DELETE FROM CLUB
-
---Test inserting into stadium manager
---without stadium_id
-INSERT INTO StadiumManager (username,name,password) VALUES
-('alybaba','f','1234'),
-('xxx','c','4567'),
-('yyy','d','8900');
-
---with stadium_id
-INSERT INTO StadiumManager (username,name,stadium_id,password) VALUES
-('ffff','g',2,'4324');
-SELECT * FROM StadiumManager;
-SET IDENTITY_INSERT StadiumManager ON;
-INSERT INTO StadiumManager (username,id,name,stadium_id,password) VALUES('',3,'',3,'')
-SET IDENTITY_INSERT StadiumManager OFF;
-DELETE FROM StadiumManager;
-
---Test inserting into ClubRepresentative
---without club_id
-INSERT INTO ClubRepresentative (username,name,password) VALUES
-('alybaba','f','1234'),
-('gggg','c','4567'),
-('hhhh','d','8900');
-
---with club_id
-INSERT INTO ClubRepresentative (username,name,club_id,password) VALUES
-('ahly rep','7amaza',9,'4324'),
-('madrid rep','k',8,'4324'),
-('barca rep','sss',7,'4324');
-SELECT * FROM ClubRepresentative;
-DELETE FROM ClubRepresentative;
-
---Test inserting into Fan
-INSERT INTO Fan (username,national_id,phone,name,address,birth_date,password) VALUES
-('f1','11111','01281002087','a','loc1','2002/10/30','3333'),
-('f2','22222','01281002086','b','loc2','2002/11/30','3334'),
-('f3','33333','01281002085','c','loc1','2002/10/30','3333'),
-('f4','44444','01281002085','c','loc1','2002/10/30','3333');
-SELECT * FROM Fan;
-DELETE FROM Fan;
-
---Test inserting into SportsAssociationManager
-INSERT INTO SportsAssociationManager (username,name,password) VALUES
-('ddd','f','1234'),
-('fff','c','4567'),
-('gggg','d','8900');
-SELECT * FROM SportsAssociationManager;
-
---Test inserting into Match
-INSERT INTO Match (start_time,end_time,stadium_id,host_id,guest_id) VALUES
-('2022/10/30 08:00:00','2022/10/30 10:00:00',2,8,7),
-('2022/10/28 05:00:00','2022/10/28 07:00:00',3,9,7),
-('2022/12/10 07:00:00','2022/12/10 09:00:00',1,7,8),
-('2022/12/11 07:00:00','2022/12/11 09:00:00',NULL,7,8);
-SELECT id ,CAST(start_time AS DATE) FROM Match;
-SELECT * FROM Match;
-DELETE FROM Match
-DELETE FROM Club WHERE id=3;
-SELECT * FROM Club;
-
---Test inserting into Host Request
-SELECT * FROM Match;
-SELECT * FROM ClubRepresentative;
-SELECT * FROM StadiumManager;
-UPDATE StadiumManager
-SET stadium_id = 1
-WHERE id = 1
-INSERT INTO HostRequest (match_id,smu,smd,cru,crd) VALUES
-(18,'fffffff','5','barca rep','11'),
-(15,'ffff','4','madrid rep','10'),
-(16,'fffffff','5','ahly rep','9'),
-(17,'alybaba','1','barca rep','11');
-UPDATE HostRequest
-SET status = 'accepted'
-WHERE id IN (2,3,4);
-SELECT * FROM HostRequest; 
 
 --2.1 b
 GO;
@@ -628,7 +460,12 @@ CREATE PROC addTicket
 	WHERE M.start_time = @startTime AND M.host_id = @hostId AND M.guest_id = @guestId
 
 	INSERT INTO Ticket (match_id) VALUES (@matchId);
-
+GO;
+EXEC addTicket 
+	@nameHostClub='Barcelona' ,
+	@nameGuestClub ='Bayern Munich',
+	@startTime='2022/11/20 07:45:00'
+SELECT * FROM Ticket
 --2.3 viii
 GO;
 CREATE PROC deleteClub
@@ -913,8 +750,9 @@ EXEC acceptRequest
 	@hostingClubName='Barcelona',
 	@guestClubName='Chelsea' ,
 	@matchStartTime ='2022/12/20 05:00:00' 
-SELECT * FROM Match
-SELECT * FROM Ticket
+SELECT * FROM Match;
+SELECT * FROM Ticket;
+
 --2.3 xx
 GO;
 CREATE PROC rejectRequest
@@ -1076,9 +914,15 @@ CREATE PROC purchaseTicket
 		SET status = 0
 		WHERE status = 1 AND id = @ticketId
 	END
-	
-
 GO;
+SELECT * FROM Ticket
+SELECT * FROM TicketBuyingTransactions
+INSERT INTO TicketBuyingTransactions VALUES ('812',4)
+EXEC purchaseTicket 
+	@nationalidnumber='812',
+	@nameHostClub='Barcelona',
+	@nameGuestClub='Bayern Munich',
+	@startTime='2022/11/20 07:45:00'
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
@@ -1126,17 +970,18 @@ GO;
 GO;
 CREATE VIEW matchesPerTeam
 AS
-	SELECT C.name, COUNT(M1.id) AS Match_per_club
-	FROM Match M1
-		INNER JOIN Match M2 ON M1.host_id = M2.guest_id
-		INNER JOIN Club C ON C.id = M1.host_id
-	WHERE M1.end_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
+	SELECT C.name, COUNT(*) AS number_of_matches
+	FROM Match M1 
+		INNER JOIN Club C ON (C.id = M1.host_id) OR (C.id=M1.guest_id)
+	WHERE M1.end_time<=CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
 	GROUP BY C.name
 GO;
 
 --Test MatchPerTeam
-DROP VIEW MatchPerTeam;
-SELECT * FROM MatchPerTeam;
+DROP VIEW matchesPerTeam;
+SELECT * FROM matchesPerTeam;
+SELECT * FROM Match;
+
 
 
 --xxvii
@@ -1148,13 +993,15 @@ AS
 	WHERE NOT EXISTS(
 		SELECT * 
 		FROM Match M
-		WHERE (M.host_id = C1.id AND M.guest_id = C2.id)
+		WHERE (M.host_id = C1.id AND M.guest_id = C2.id) AND stadium_id IS NOT NULL AND M.end_time<CURRENT_TIMESTAMP
 	) AND NOT EXISTS (
 		SELECT * 
 		FROM Match M
-		WHERE (M.host_id = C2.id AND M.guest_id = C1.id)
-	)
-
+		WHERE (M.host_id = C2.id AND M.guest_id = C1.id) AND stadium_id IS NOT NULL AND M.end_time<CURRENT_TIMESTAMP
+	) AND C1.id > C2.id
+GO;
+DROP VIEW clubsNeverMatched 
+SELECT * FROM clubsNeverMatched
 GO;
 --2.3 xxviii
 CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
@@ -1163,16 +1010,18 @@ CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 	RETURN 
 		SELECT C2.name AS club2_name
 		FROM Club C1, Club C2
-		WHERE C1.name = @clubName AND NOT EXISTS(
+		WHERE C1.name = @clubName AND C2.name <> @clubName AND NOT EXISTS(
 			SELECT * 
 			FROM Match M
-			WHERE (M.host_id = C1.id AND M.guest_id = C2.id)
+			WHERE (M.host_id = C1.id AND M.guest_id = C2.id)  AND stadium_id IS NOT NULL AND M.end_time<CURRENT_TIMESTAMP
 		) AND NOT EXISTS (
 			SELECT * 
 			FROM Match M
-			WHERE (M.host_id = C2.id AND M.guest_id = C1.id)
-		)
-
+			WHERE (M.host_id = C2.id AND M.guest_id = C1.id) AND stadium_id IS NOT NULL AND M.end_time<CURRENT_TIMESTAMP
+		) 
+GO;
+DROP FUNCTION clubsNeverPlayed
+SELECT * FROM clubsNeverPlayed('Chelsea')
 --		SELECT C4.name 
 --		FROM ((
 --				SELECT C1.id AS all_ids
@@ -1223,14 +1072,16 @@ CREATE FUNCTION matchWithHighestAttendance ()
 				GROUP BY host.name , guest.name, Mat.id
 			) AS T
 		)
+GO;
 
+SELECT * FROM TicketBuyingTransactions
 --2.3 xxx
 GO;
 CREATE FUNCTION matchesRankedByAttendance()
 	RETURNS TABLE
 	AS 
 	RETURN 
-		SELECT host.name , guest.name , COUNT(COALESCE(TBT.ticket_id,0))
+		SELECT host.name , guest.name , COUNT(COALESCE(TBT.ticket_id,0)) AS count_of_tickets
 		FROM Match Mat
 			INNER JOIN Club host ON Mat.host_id = host.id
 			INNER JOIN Club guest ON Mat.guest_id = guest.id
@@ -1239,10 +1090,11 @@ CREATE FUNCTION matchesRankedByAttendance()
 			Ticket T
 				INNER JOIN TicketBuyingTransactions TBT ON T.id = TBT.ticket_id
 			) ON T.match_id = Mat.id
-		WHERE Mat.end_time <= CURRENT_TIMESTAMP
+		WHERE Mat.end_time < CURRENT_TIMESTAMP
 		GROUP BY host.name , guest.name, Mat.id
 		ORDER BY COUNT(COALESCE(TBT.ticket_id,0)) DESC
 		OFFSET 0 ROWS
+GO;
 
 --2.3 xxxi
 GO;
@@ -1250,7 +1102,7 @@ CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20
 	RETURNS TABLE 
 	AS
 	RETURN 
-		SELECT host.name , guest.name
+		SELECT host.name AS host_club, guest.name AS guest_club
 		FROM Match Mat
 			INNER JOIN Club host on Mat.host_id = host.id
 			INNER JOIN Club guest on Mat.guest_id = guest.id
@@ -1259,6 +1111,10 @@ CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20
 			INNER JOIN ClubRepresentative CR ON CR.club_id = H.crd
 			INNER JOIN Stadium S ON S.id = SM.stadium_id
 		WHERE host.name = @clubName AND S.name = @stadiumName
+GO;
+DROP FUNCTION requestsFromClub
+SELECT * FROM requestsFromClub('Camp nou','Barcelona')
+
 
 
 	
