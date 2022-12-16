@@ -76,6 +76,9 @@ SELECT * FROM Ticket;
 SELECT * FROM TicketBuyingTransactions;
 SELECT * FROM HostRequest;
 
+EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
+
+
 
 --Test inserting into stadiums
 INSERT INTO Stadium (name,capacity,location) VALUES

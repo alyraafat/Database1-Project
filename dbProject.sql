@@ -369,11 +369,13 @@ CREATE PROC addNewMatch
 	FROM Club C
 	Where C.name = @guestclub;
 	INSERT INTO Match (start_time , host_id , guest_id,end_time) VALUES (@starttime , @host , @guest , @endtime);
+GO;
 
 DROP PROC addNewMatch
 -- Test addNewMatch
-EXEC addNewMatch @hostclub='Barcelona' ,@guestclub='Chelsea', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
+EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
 SELECT * FROM Match;
+
 --2.3 iii
 GO;
 CREATE VIEW clubsWithNoMatches AS
@@ -392,7 +394,8 @@ CREATE VIEW clubsWithNoMatches AS
 			WHERE C.id = C2.id
 	);
 -- OR we can use outer join
-
+GO;
+SELECT * FROM clubsWithNoMatches
 --2.3 iv
 GO;
 CREATE PROC deleteMatch 
@@ -410,8 +413,18 @@ CREATE PROC deleteMatch
 	FROM Club C
 	Where C.name = @nameguestclub;
 
+	DELETE FROM HostRequest
+	WHERE match_id IN (
+		SELECT id
+		FROM Match
+		WHERE (Match.host_id = @host AND Match.guest_id = @guest)
+	);
+
 	DELETE FROM Match 
 	WHERE (Match.host_id = @host AND Match.guest_id = @guest) 
+GO;
+DROP PROC deleteMatch;
+EXEC deleteMatch @namehostclub='Bayern Munich' , @nameguestclub='Chelsea';
 
 --2.3 v
 GO;
@@ -477,12 +490,21 @@ CREATE PROC deleteClub
 	FROM Club C
 	WHERE C.name = @clubName;
 
-	DELETE FROM Club
-	WHERE Club.id = @id;
+	DELETE FROM HostRequest
+	WHERE crd IN (
+		SELECT id
+		FROM ClubRepresentative
+		WHERE club_id=@id
+	);
 
 	DELETE FROM Match
 	WHERE guest_id = @id
 
+	DELETE FROM Club
+	WHERE Club.id = @id;
+GO;
+DROP PROC deleteClub;
+EXEC deleteClub @clubName='Barcelona';
 --2.3 ix
 GO;
 CREATE PROC addStadium
@@ -606,9 +628,14 @@ CREATE PROC addHostRequest
 	SELECT @matchId = M.id
 	FROM Match M
 	WHERE M.host_id = @hostId AND M.start_time = @startTime
-
-	INSERT INTO HostRequest(match_id,smd,crd) VALUES (@matchId,@stadiumManagerId,@clubRepId);
-
+	IF (@matchId IS NOT NULL AND @stadiumManagerId IS NOT NULL AND @clubRepId IS NOT NULL)
+	BEGIN
+		INSERT INTO HostRequest(match_id,smd,crd) VALUES (@matchId,@stadiumManagerId,@clubRepId);
+	END
+	ELSE 
+	BEGIN
+		PRINT 'One of entries is null as it was not found in the database'
+	END
 GO;
 DROP PROC addHostRequest;
 EXEC addHostRequest @clubName='Barcelona',@stadiumName='Camp nou',@startTime='2022/12/20 05:00:00'
