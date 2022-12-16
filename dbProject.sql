@@ -373,7 +373,7 @@ GO;
 
 DROP PROC addNewMatch
 -- Test addNewMatch
-EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
+EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Bayern Munich', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
 SELECT * FROM Match;
 
 --2.3 iii
@@ -638,7 +638,7 @@ CREATE PROC addHostRequest
 	END
 GO;
 DROP PROC addHostRequest;
-EXEC addHostRequest @clubName='Barcelona',@stadiumName='Camp nou',@startTime='2022/12/20 05:00:00'
+EXEC addHostRequest @clubName='Chelsea',@stadiumName='Stamford Bridge',@startTime='2022/12/20 05:00:00'
 SELECT * FROM Match;
 SELECT * FROM HostRequest;
 --2.3 xvi
@@ -761,7 +761,7 @@ CREATE PROC acceptRequest
 	DECLARE @capacity INT
 	SELECT @capacity = S.capacity 
 	FROM Stadium S
-	WHERE s.id = @stadiumID ;
+	WHERE S.id = @stadiumID ;
 
 	DECLARE @counter INT
 	SET @counter = 1
@@ -774,16 +774,16 @@ GO;
 DROP PROC acceptRequest;
 EXEC acceptRequest 
 	@stadiumManagerUserName='omar.ashraf',
-	@hostingClubName='Barcelona',
-	@guestClubName='Chelsea' ,
+	@hostingClubName='Chelsea',
+	@guestClubName='Bayern Munich' ,
 	@matchStartTime ='2022/12/20 05:00:00' 
+
 SELECT * FROM Match;
 SELECT * FROM Ticket;
-
+DELETE FROM Ticket WHERE match_id IS NULL
 --2.3 xx
 GO;
 CREATE PROC rejectRequest
-
 	@stadiumManagerUserName VARCHAR(20),
 	@hostingClubName VARCHAR(20),
 	@guestClubName VARCHAR(20),
@@ -809,11 +809,11 @@ CREATE PROC rejectRequest
 	SELECT @requestId = H.id
 	FROM HostRequest H 
 		INNER JOIN Match M ON M.id = H.match_id
-	WHERE start_time= @matchStartTime AND host_id= @hostId AND guest_id= @guestId AND H.smd = @smd 
-	
+	WHERE start_time= @matchStartTime AND host_id=@hostId AND guest_id=@guestId AND H.smd = @smd
+
 	UPDATE HostRequest
 	SET status='rejected'
-	where id=@requestId
+	WHERE id=@requestId
 
 	UPDATE Match
 	SET stadium_id = NULL
@@ -829,11 +829,10 @@ CREATE PROC rejectRequest
 GO;
 DROP PROC rejectRequest;
 EXEC rejectRequest 
-	@stadiumManagerUserName='omar.ashraf',
-	@hostingClubName='Barcelona',
-	@guestClubName='Chelsea' ,
+	@stadiumManagerUserName='ali.3agamy',
+	@hostingClubName='Chelsea',
+	@guestClubName='Bayern Munich' ,
 	@matchStartTime ='2022/12/20 05:00:00'
-
 --2.3 xxi
 GO;
 CREATE PROC addFan

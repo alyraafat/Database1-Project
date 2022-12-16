@@ -76,6 +76,7 @@ SELECT * FROM Ticket;
 SELECT * FROM TicketBuyingTransactions;
 SELECT * FROM HostRequest;
 
+DELETE FROM HostRequest WHERE match_id IS NULL 
 EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
 
 
