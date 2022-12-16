@@ -374,6 +374,7 @@ GO;
 DROP PROC addNewMatch
 -- Test addNewMatch
 EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Bayern Munich', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
+EXEC addNewMatch @hostclub='Madrid' ,@guestclub='Barcelona', @starttime='2022/12/10 05:00:00', @endtime='2022/12/10 07:00:00'
 SELECT * FROM Match;
 
 --2.3 iii
@@ -448,7 +449,8 @@ CREATE PROC addClub
 	AS
 
 	INSERT INTO Club (name,location) VALUES (@nameOfClub,@nameOfLocation);
-
+GO;
+EXEC addClub @nameOfClub='Madrid', @nameOfLocation='Madrid'
 --2.3 vii
 GO;
 CREATE PROC addTicket
@@ -514,7 +516,8 @@ CREATE PROC addStadium
 	AS
 
 	INSERT INTO Stadium (name,capacity,location) VALUES (@stadiumName,@capacity,@location);
-
+GO;
+EXEC addStadium @stadiumName='santiago',@location='Madrid',@capacity=3
 --2.3 x
 GO;
 CREATE PROC deleteStadium
@@ -736,6 +739,11 @@ CREATE PROC addStadiumManager
 	END
 GO;
 DROP PROC addStadiumManager;
+EXEC addStadiumManager 
+	@name='kimoooooo',
+	@stadiumName='santiago' ,
+	@username='kimo.palace' ,
+	@password='123'  
 
 --Test addStadiumManager
 EXEC addStadiumManager @name='lol',@stadiumName='Borg alarab',@username='karim.gamaleldin2',@password='1234';
@@ -826,6 +834,12 @@ EXEC acceptRequest
 	@hostingClubName='Chelsea',
 	@guestClubName='Bayern Munich' ,
 	@matchStartTime ='2022/12/20 05:00:00' 
+
+EXEC acceptRequest 
+	@stadiumManagerUserName='kimo.palace',
+	@hostingClubName='Madrid',
+	@guestClubName='Barcelona' ,
+	@matchStartTime ='2022/12/10 05:00:00' 
 
 SELECT * FROM Match;
 SELECT * FROM Ticket;
@@ -1055,33 +1069,16 @@ CREATE PROC updateMatchHost
 	WHERE host_id=@hostId AND guest_id=@guestId
 GO;
 
---2.3 xxvi in old version
-GO;
-CREATE PROC deleteMatchOnStadium
-	@stadiumName VARCHAR(20)
-	AS
-
-	DECLARE @stadiumId INT
-	SELECT @stadiumId = S.id
-	FROM Stadium S
-	WHERE S.name = @stadiumName
-
-	DELETE FROM Match
-	WHERE stadium_id = @stadiumId AND start_time>CURRENT_TIMESTAMP
-GO;
-
 --2.3 xxvi
 GO;
 CREATE VIEW matchesPerTeam
 AS
-	SELECT C.name, COUNT(M1.id) AS Match_per_club
+	SELECT C.name, COUNT(*) AS Match_per_club
 	FROM Match M1
-		INNER JOIN Match M2 ON M1.host_id = M2.guest_id
-		INNER JOIN Club C ON C.id = M1.host_id
+		INNER JOIN Club C ON (C.id = M1.host_id OR C.id=M1.guest_id)
 	WHERE M1.end_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
 	GROUP BY C.name
 GO;
-
 --Test MatchPerTeam
 DROP VIEW matchesPerTeam;
 SELECT * FROM matchesPerTeam;
@@ -1126,7 +1123,7 @@ CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 		) 
 GO;
 DROP FUNCTION clubsNeverPlayed
-SELECT * FROM clubsNeverPlayed('Chelsea')
+SELECT * FROM clubsNeverPlayed('Bayern Munich')
 --		SELECT C4.name 
 --		FROM ((
 --				SELECT C1.id AS all_ids
@@ -1158,7 +1155,7 @@ CREATE FUNCTION matchWithHighestAttendance ()
 	RETURNS TABLE
 	AS 
 	RETURN 
-		SELECT host.name , guest.name
+		SELECT host.name AS host_name, guest.name AS guest_name
 		FROM Match Mat
 			INNER JOIN Club host on Mat.host_id = host.id
 			INNER JOIN Club guest on Mat.guest_id = guest.id
@@ -1178,15 +1175,19 @@ CREATE FUNCTION matchWithHighestAttendance ()
 			) AS T
 		)
 GO;
-
+DROP FUNCTION matchWithHighestAttendance
+SELECT * FROM matchWithHighestAttendance()
 SELECT * FROM TicketBuyingTransactions
+SELECT * FROM Ticket
+SELECT * FROM Match
+
 --2.3 xxx
 GO;
 CREATE FUNCTION matchesRankedByAttendance()
 	RETURNS TABLE
 	AS 
 	RETURN 
-		SELECT host.name , guest.name , COUNT(COALESCE(TBT.ticket_id,0)) AS count_of_tickets
+		SELECT host.name AS host_name, guest.name AS guest_name , COUNT(TBT.ticket_id) AS count_of_tickets
 		FROM Match Mat
 			INNER JOIN Club host ON Mat.host_id = host.id
 			INNER JOIN Club guest ON Mat.guest_id = guest.id
@@ -1197,9 +1198,11 @@ CREATE FUNCTION matchesRankedByAttendance()
 			) ON T.match_id = Mat.id
 		WHERE Mat.end_time < CURRENT_TIMESTAMP
 		GROUP BY host.name , guest.name, Mat.id
-		ORDER BY COUNT(COALESCE(TBT.ticket_id,0)) DESC
+		ORDER BY COUNT(TBT.ticket_id) DESC
 		OFFSET 0 ROWS
 GO;
+DROP FUNCTION matchesRankedByAttendance
+SELECT * FROM [dbo].matchesRankedByAttendance();
 
 --2.3 xxxi
 GO;
