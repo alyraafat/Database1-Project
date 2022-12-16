@@ -1106,12 +1106,16 @@ GO;
 GO;
 CREATE VIEW matchesPerTeam
 AS
-	SELECT C.name, COUNT(M1.id) AS Match_per_club
-	FROM Match M1
-		INNER JOIN Match M2 ON M1.host_id = M2.guest_id
-		INNER JOIN Club C ON C.id = M1.host_id
-	WHERE M1.end_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
-	GROUP BY C.name
+	--SELECT C.name, COUNT(M1.id) AS Match_per_club
+	--FROM Match M1
+		--INNER JOIN Match M2 ON M1.host_id = M2.guest_id
+		--INNER JOIN Club C ON C.id = M1.host_id
+	--WHERE M1.end_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
+	--GROUP BY C.name
+	SELECT DISTINCT C1.name
+	FROM Match M
+	INNER JOIN Club C1 on M.host_id = C1.id
+
 GO;
 
 --Test MatchPerTeam
