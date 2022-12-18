@@ -51,7 +51,7 @@ AS
 	CREATE TABLE Fan(
 		username VARCHAR(20) UNIQUE,
 		national_id VARCHAR(20) UNIQUE,
-		phone INT,
+		phone INT, --should be varchar but in proc addFan the phone input is int
 		name VARCHAR(20),
 		address VARCHAR(20),
 		status BIT DEFAULT 1, -- 1 means unblocked, 0 means blocked
@@ -118,8 +118,6 @@ AS
 		FOREIGN KEY(match_id) REFERENCES Match(id) ON DELETE NO ACTION ON UPDATE NO ACTION
 	);
 GO;
-Drop PROC createAllTables;
-EXEC createAllTables;
 
 --2.1 b
 GO;
@@ -139,11 +137,7 @@ AS
 	Stadium,
 	Club;
 GO;
-Drop PROC dropAllTables;
-EXEC dropAllTables;
---DROP DATABASE FootballDB;
-EXEC sp_fkeys 'Stadium'
-DROP TABLE Matches 
+
 --2.1 c
 GO;
 CREATE PROC dropAllProceduresFunctionsViews
@@ -197,7 +191,6 @@ AS
 	matchesRankedByAttendance,
 	requestsFromClub;
 GO;
-EXEC dropAllProceduresFunctionsViews;
 
 --2.1 d
 GO;
@@ -216,8 +209,6 @@ AS
 	DELETE FROM Stadium;
 	DELETE FROM Club;
 GO;
-DROP PROC clearAllTables;
-EXEC clearAllTables;
 
 -------------------------------------------------------------------
 
@@ -228,8 +219,6 @@ CREATE VIEW allAssocManagers AS
 	FROM SportsAssociationManager S
 		INNER JOIN SystemUser U ON U.username = S.username;
 GO;
---Test allAssocManagers
-SELECT * FROM allAssocManagers;
 
 --2.2 b
 GO;
@@ -238,13 +227,7 @@ CREATE VIEW allClubRepresentatives AS
 	From ClubRepresentative R
 		INNER JOIN Club C ON C.id = R.club_id
 		INNER JOIN SystemUser U ON U.username = R.username;
-
 GO;
---Test allClubRepresentatives
-SELECT * FROM ClubRepresentative;
-SELECT * FROM Club;
-SELECT * FROM allClubRepresentatives;
-
 
 --2.2 c
 GO;
@@ -254,8 +237,6 @@ CREATE VIEW allStadiumManagers AS
 		INNER JOIN Stadium S ON S.id = M.stadium_id
 		INNER JOIN SystemUser U ON U.username = M.username;
 GO;
---Test allStadiumManagers
-SELECT * FROM allStadiumManagers;
 
 --2.2 d
 GO;
@@ -264,8 +245,6 @@ CREATE VIEW allFans AS
 	From Fan F
 		INNER JOIN SystemUser U ON U.username = F.username;
 GO;
---Test allFans
-SELECT * FROM allFans;
 
 --2.2 e 
 GO; 
@@ -275,9 +254,6 @@ CREATE VIEW allMatches AS
 		INNER JOIN Club C1 ON C1.id = M.host_id 
 		INNER JOIN Club C2 ON C2.id = M.guest_id; 
 GO;
-DROP VIEW allMatches;
---Test allMatches
-SELECT * FROM allMatches;
 
 --2.2 f
 GO; 
@@ -289,8 +265,6 @@ CREATE VIEW allTickets AS
 		INNER JOIN CLUB A ON A.id = M.guest_id
 		INNER JOIN Stadium S on S.id = M.stadium_id;
 GO;
---Test allTickets
-SELECT * FROM allTickets;
 
 --2.2 g
 GO;
@@ -298,8 +272,6 @@ CREATE VIEW allCLubs AS
 	SELECT C.name , C.location
 	FROM Club C
 GO;
---Test allCLubs
-SELECT * FROM allCLubs;
 
 --2.2 h
 GO; 
@@ -307,8 +279,6 @@ CREATE VIEW allStadiums AS
 	SELECT S.name , S.location , S.capacity , S.status 
 	From Stadium S
 GO;
---Test allStadiums
-SELECT * FROM allStadiums;
 
 --2.2 i
 GO;
@@ -318,9 +288,7 @@ CREATE VIEW allRequests AS
 		INNER JOIN ClubRepresentative CR on CR.id = R.crd
 		INNER JOIN StadiumManager SM ON SM.id = R.smd
 GO;
-DROP VIEW allRequests;
---Test allRequests
-SELECT * FROM allRequests;
+
 -------------------------------------------------------------------
 
 --2.3 i
@@ -344,12 +312,7 @@ CREATE PROC addAssociationManager
 		PRINT 'This User is already in the Database.';
 	END
 GO;
-DROP PROC addAssociationManager;
---Test addAssociationManager
-EXEC addAssociationManager @name = 'basel', @username = 'biso.farouk', @password='4343'
-SELECT * FROM SportsAssociationManager
-SELECT * FROM SystemUser
-DELETE FROM SportsAssociationManager WHERE username = 'ali.3agamy'
+
 --2.3 ii
 GO;
 CREATE PROC addNewMatch
@@ -371,12 +334,6 @@ CREATE PROC addNewMatch
 	INSERT INTO Match (start_time , host_id , guest_id,end_time) VALUES (@starttime , @host , @guest , @endtime);
 GO;
 
-DROP PROC addNewMatch
--- Test addNewMatch
-EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Bayern Munich', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
-EXEC addNewMatch @hostclub='Madrid' ,@guestclub='Barcelona', @starttime='2022/12/10 05:00:00', @endtime='2022/12/10 07:00:00'
-SELECT * FROM Match;
-
 --2.3 iii
 GO;
 CREATE VIEW clubsWithNoMatches AS
@@ -396,7 +353,6 @@ CREATE VIEW clubsWithNoMatches AS
 	);
 -- OR we can use outer join
 GO;
-SELECT * FROM clubsWithNoMatches
 --2.3 iv
 GO;
 CREATE PROC deleteMatch 
@@ -424,8 +380,6 @@ CREATE PROC deleteMatch
 	DELETE FROM Match 
 	WHERE (Match.host_id = @host AND Match.guest_id = @guest) 
 GO;
-DROP PROC deleteMatch;
-EXEC deleteMatch @namehostclub='Bayern Munich' , @nameguestclub='Chelsea';
 
 --2.3 v
 GO;
@@ -450,7 +404,6 @@ CREATE PROC addClub
 
 	INSERT INTO Club (name,location) VALUES (@nameOfClub,@nameOfLocation);
 GO;
-EXEC addClub @nameOfClub='Madrid', @nameOfLocation='Madrid'
 --2.3 vii
 GO;
 CREATE PROC addTicket
@@ -476,11 +429,7 @@ CREATE PROC addTicket
 
 	INSERT INTO Ticket (match_id) VALUES (@matchId);
 GO;
-EXEC addTicket 
-	@nameHostClub='Barcelona' ,
-	@nameGuestClub ='Bayern Munich',
-	@startTime='2022/11/20 07:45:00'
-SELECT * FROM Ticket
+
 --2.3 viii
 GO;
 CREATE PROC deleteClub
@@ -505,8 +454,7 @@ CREATE PROC deleteClub
 	DELETE FROM Club
 	WHERE Club.id = @id;
 GO;
-DROP PROC deleteClub;
-EXEC deleteClub @clubName='Barcelona';
+
 --2.3 ix
 GO;
 CREATE PROC addStadium
@@ -517,7 +465,6 @@ CREATE PROC addStadium
 
 	INSERT INTO Stadium (name,capacity,location) VALUES (@stadiumName,@capacity,@location);
 GO;
-EXEC addStadium @stadiumName='santiago',@location='Madrid',@capacity=3
 --2.3 x
 GO;
 CREATE PROC deleteStadium
@@ -540,11 +487,6 @@ CREATE PROC deleteStadium
 	WHERE Stadium.id = @id;
 
 GO;
-EXEC deleteStadium @stadiumName = 'Camp nou';
-
-SELECT * FROM Stadium;
-SELECT * FROM Match;
-SELECT * FROM Ticket;
 
 --2.3 xi
 GO;
@@ -609,13 +551,7 @@ CREATE PROC addRepresentative
 		PRINT 'This Club isnot in our Database.';
 	END
 GO;
-EXEC addRepresentative  @repName = 'kimo',
-						@clubName= 'Alahly',
-						@username= 'karifsgsdm.gamaleldin',
-						@password='1234'
-SELECT * FROM ClubRepresentative;
-SELECT * FROM SystemUser;
-DROP PROC addRepresentative;
+
 --2.3 xiv
 GO;
 CREATE FUNCTION viewAvailableStadiumsOn (@datetime DATETIME)
@@ -630,10 +566,6 @@ CREATE FUNCTION viewAvailableStadiumsOn (@datetime DATETIME)
 			WHERE  S.id = M.stadium_id AND CAST(M.start_time AS DATE) = @datetime
 		)
 GO;
---Test viewAvailableStadiumsOn
-SELECT * FROM Stadium;
-SELECT * FROM Match;
-SELECt * FROM [dbo].viewAvailableStadiumsOn('2022/11/20');
 
 --2.3 xv
 GO;
@@ -669,10 +601,7 @@ CREATE PROC addHostRequest
 		PRINT 'One of entries is null as it was not found in the database'
 	END
 GO;
-DROP PROC addHostRequest;
-EXEC addHostRequest @clubName='Chelsea',@stadiumName='Stamford Bridge',@startTime='2022/12/20 05:00:00'
-SELECT * FROM Match;
-SELECT * FROM HostRequest;
+
 --2.3 xvi
 GO;
 CREATE FUNCTION allUnassignedMatches(@clubName VARCHAR(20))
@@ -686,11 +615,6 @@ CREATE FUNCTION allUnassignedMatches(@clubName VARCHAR(20))
 			INNER JOIN Club C2 ON C2.id = M.guest_id
 		WHERE M.stadium_id IS NULL AND @clubName = C1.name
 GO;
-SELECT * FROM MATCH ;
-SELECT * FROM Stadium;
-
---Test allUnassignedMatch
-SELECT * FROM [dbo].allUnassignedMatches('Chelsea');
 
 --2.3 xvii
 GO;
@@ -738,18 +662,6 @@ CREATE PROC addStadiumManager
 	PRINT 'This Stadium isnot in our database'
 	END
 GO;
-DROP PROC addStadiumManager;
-EXEC addStadiumManager 
-	@name='kimoooooo',
-	@stadiumName='santiago' ,
-	@username='kimo.palace' ,
-	@password='123'  
-
---Test addStadiumManager
-EXEC addStadiumManager @name='lol',@stadiumName='Borg alarab',@username='karim.gamaleldin2',@password='1234';
-SELECT * FROM Stadium;
-SELECT * FROM StadiumManager;
-SELECT * FROM SystemUser;
 
 --2.3 xviii
 GO;
@@ -766,10 +678,6 @@ CREATE FUNCTION allPendingRequests (@username VARCHAR(20))
 			INNER JOIN Club C ON C.id = M.guest_id
 		WHERE SM.username = @username AND H.status = 'unhandled'
 GO;
-DROP FUNCTION allPendingRequests;
-
---Test allPendingRequests
-SELECT * FROM [dbo].allPendingRequests('fffffff');
 
 GO;
 --2.3 xix
@@ -828,22 +736,7 @@ CREATE PROC acceptRequest
 		SET @counter = @counter+1;
 	END
 GO;
-DROP PROC acceptRequest;
-EXEC acceptRequest 
-	@stadiumManagerUserName='omar.ashraf',
-	@hostingClubName='Chelsea',
-	@guestClubName='Bayern Munich' ,
-	@matchStartTime ='2022/12/20 05:00:00' 
 
-EXEC acceptRequest 
-	@stadiumManagerUserName='kimo.palace',
-	@hostingClubName='Madrid',
-	@guestClubName='Barcelona' ,
-	@matchStartTime ='2022/12/10 05:00:00' 
-
-SELECT * FROM Match;
-SELECT * FROM Ticket;
-DELETE FROM Ticket WHERE match_id IS NULL
 --2.3 xx
 GO;
 CREATE PROC rejectRequest
@@ -890,12 +783,7 @@ CREATE PROC rejectRequest
 	DELETE FROM Ticket
 	WHERE match_id = @matchId
 GO;
-DROP PROC rejectRequest;
-EXEC rejectRequest 
-	@stadiumManagerUserName='ali.3agamy',
-	@hostingClubName='Chelsea',
-	@guestClubName='Bayern Munich' ,
-	@matchStartTime ='2022/12/20 05:00:00'
+
 --2.3 xxi
 GO;
 CREATE PROC addFan
@@ -921,7 +809,6 @@ CREATE PROC addFan
 		PRINT 'This User is already in the Database.';
 	END
 GO;
-DROP PROC addFan;
 --2.3 xxii 
 GO;
 CREATE FUNCTION upcomingMatchesOfClub (@clubName VARCHAR(20))
@@ -937,7 +824,7 @@ CREATE FUNCTION upcomingMatchesOfClub (@clubName VARCHAR(20))
 		WHERE  C.name = @clubName AND M.start_time> CURRENT_TIMESTAMP
 
 --2.3 xxiii
-go
+GO;
 CREATE FUNCTION availableMatchesToAttend (@date DATETIME)
 	RETURNS TABLE
 	AS
@@ -951,9 +838,7 @@ CREATE FUNCTION availableMatchesToAttend (@date DATETIME)
 			INNER JOIN Ticket T on T.match_id=M.id
 		WHERE T.status=1 AND M.start_time>=@date
 GO;
-SELECT * FROM [dbo].availableMatchesToAttend('2022/09/12')
-SELECT * FROM Ticket
-SELECT * FROM Match;
+
 --2.3 xxiv
 GO;
 CREATE PROC purchaseTicket
@@ -1027,20 +912,8 @@ CREATE PROC purchaseTicket
 	BEGIN
 		PRINT 'This Username isnot in the Database';
 	END
-
-
 GO;
-DROP PROC purchaseTicket;
-SELECT * FROM Ticket
-SELECT * FROM TicketBuyingTransactions
-DELETE FROM TicketBuyingTransactions;
-INSERT INTO Ticket Values (1,1)
-SELECT * FROM fan;
-EXEC purchaseTicket 
-	@nationalidnumber= '3434',
-	@nameHostClub='Chelsea',
-	@nameGuestClub='Bayern Munich',
-	@startTime='2022/10/10 09:45:00'
+
 --2.3 xxv
 GO;
 CREATE PROC updateMatchHost
@@ -1079,12 +952,6 @@ AS
 	WHERE M1.end_time<CURRENT_TIMESTAMP AND M1.stadium_id IS NOT NULL
 	GROUP BY C.name
 GO;
---Test MatchPerTeam
-DROP VIEW matchesPerTeam;
-SELECT * FROM matchesPerTeam;
-SELECT * FROM Match;
-
-
 
 --xxvii
 GO;
@@ -1102,8 +969,7 @@ AS
 		WHERE (M.host_id = C2.id AND M.guest_id = C1.id) AND stadium_id IS NOT NULL AND M.end_time<CURRENT_TIMESTAMP
 	) AND C1.id > C2.id
 GO;
-DROP VIEW clubsNeverMatched 
-SELECT * FROM clubsNeverMatched
+
 GO;
 --2.3 xxviii
 CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
@@ -1122,32 +988,6 @@ CREATE FUNCTION clubsNeverPlayed (@clubName VARCHAR(20))
 			WHERE (M.host_id = C2.id AND M.guest_id = C1.id) AND stadium_id IS NOT NULL AND M.end_time<CURRENT_TIMESTAMP
 		) 
 GO;
-DROP FUNCTION clubsNeverPlayed
-SELECT * FROM clubsNeverPlayed('Bayern Munich')
---		SELECT C4.name 
---		FROM ((
---				SELECT C1.id AS all_ids
---				FROM Club C1
---				WHERE C1.name <> @clubName
---			)
---			EXCEPT
---			(
---				(
---					SELECT M.guest_id
---					FROM Club C2
---						INNER JOIN Match M1 ON C2.id = M1.host_id
---					WHERE C2.name = @clubName
---				)
---				UNION
---				(
---					SELECT M.host_id
---					FROM Club C3
---						INNER JOIN Match M2 ON C3.id = M2.guest_id
---					WHERE C3.name = @clubName
---				)
---			)) as T 
---				INNER JOIN Club C4 ON C4.id = all_ids
-
 
 --2.3 xxix
 GO;
@@ -1175,11 +1015,6 @@ CREATE FUNCTION matchWithHighestAttendance ()
 			) AS T
 		)
 GO;
-DROP FUNCTION matchWithHighestAttendance
-SELECT * FROM matchWithHighestAttendance()
-SELECT * FROM TicketBuyingTransactions
-SELECT * FROM Ticket
-SELECT * FROM Match
 
 --2.3 xxx
 GO;
@@ -1201,8 +1036,6 @@ CREATE FUNCTION matchesRankedByAttendance()
 		ORDER BY COUNT(TBT.ticket_id) DESC
 		OFFSET 0 ROWS
 GO;
-DROP FUNCTION matchesRankedByAttendance
-SELECT * FROM [dbo].matchesRankedByAttendance();
 
 --2.3 xxxi
 GO;
@@ -1220,8 +1053,7 @@ CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20
 			INNER JOIN Stadium S ON S.id = SM.stadium_id
 		WHERE host.name = @clubName AND S.name = @stadiumName
 GO;
-DROP FUNCTION requestsFromClub
-SELECT * FROM requestsFromClub('Camp nou','Barcelona')
+
 
 
 
