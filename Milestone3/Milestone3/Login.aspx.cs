@@ -8,6 +8,8 @@ using System.Data.SqlClient;
 using System.Web.Configuration;
 using System.Data;
 using System.Runtime.Remoting.Messaging;
+using System.Data.Common;
+using System.Collections;
 
 namespace Milestone3
 {
@@ -25,17 +27,13 @@ namespace Milestone3
             SqlConnection conn = new SqlConnection(connStr);
             SqlCommand systemUsers = new SqlCommand("SystemUsers", conn);
             systemUsers.CommandType = CommandType.StoredProcedure;
+
             conn.Open();
             string sql = "SELECT * from SystemUser";
             SqlCommand cmd = new SqlCommand(sql, conn);
             SqlDataReader rdr = cmd.ExecuteReader();
-            while (rdr.Read())
-            {
-                String name = rdr.GetString(rdr.GetOrdinal("username"));
-                Label n = new Label();
-                n.Text = name;
-                form1.Controls.Add(n)
-            }
+            GridView1.DataSource = rdr;
+            GridView1.DataBind();
             conn.Close();
 
         }
