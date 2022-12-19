@@ -32,8 +32,7 @@ namespace Milestone3
             string sql = "SELECT * from SystemUser";
             SqlCommand cmd = new SqlCommand(sql, conn);
             SqlDataReader rdr = cmd.ExecuteReader();
-            GridView1.DataSource = rdr;
-            GridView1.DataBind();
+          
             conn.Close();
 
         }
