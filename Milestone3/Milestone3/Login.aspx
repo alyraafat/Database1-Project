@@ -11,11 +11,18 @@
         <div style="width: 870px; margin-left: 400px">
             Please Login<br />
             username<br />
-            <input id="username" type="text" /><br />
+            <TextBox
+                <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox> 
+            <asp:TextBox ID="username" runat="server"></asp:TextBox>
+            <br />
             <br />
             password<br />
-            <input id="password" type="text" /><br />
-            <asp:Button ID="Button1" runat="server" OnClick="login" Text="Login" />
+            <asp:TextBox ID="password" runat="server"></asp:TextBox>
+            <br />
+            <br />
+            <asp:Button ID="Button1" runat="server" OnClick="login" Text="Button" />
+            <asp:GridView ID="GridView1" runat="server" OnSelectedIndexChanged="GridView1_SelectedIndexChanged">
+            </asp:GridView>
         </div>
     </form>
 </body>
