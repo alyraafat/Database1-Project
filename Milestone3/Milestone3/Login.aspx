@@ -15,7 +15,7 @@
             <br />
             password<br />
             <input id="password" type="text" /><br />
-            <asp:Button ID="Button1" runat="server" OnClick="login" Text="Button" />
+            <asp:Button ID="Button1" runat="server" OnClick="login" Text="Login" />
         </div>
     </form>
 </body>
