@@ -18,6 +18,7 @@ namespace Milestone3
 
         protected void login(object sender, EventArgs e)
         {
+
             String connStr = WebConfigurationManager.ConnectionStrings["Reservation_System"].ToString();
             SqlConnection conn = new SqlConnection(connStr);
 
