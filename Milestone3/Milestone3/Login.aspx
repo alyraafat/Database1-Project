@@ -21,8 +21,6 @@
             <br />
             <br />
             <asp:Button ID="Button1" runat="server" OnClick="login" Text="Button" />
-            <asp:GridView ID="GridView1" runat="server" OnSelectedIndexChanged="GridView1_SelectedIndexChanged">
-            </asp:GridView>
         </div>
     </form>
 </body>

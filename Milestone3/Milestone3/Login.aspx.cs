@@ -25,13 +25,17 @@ namespace Milestone3
             SqlConnection conn = new SqlConnection(connStr);
             SqlCommand systemUsers = new SqlCommand("SystemUsers", conn);
             systemUsers.CommandType = CommandType.StoredProcedure;
-
             conn.Open();
             string sql = "SELECT * from SystemUser";
             SqlCommand cmd = new SqlCommand(sql, conn);
             SqlDataReader rdr = cmd.ExecuteReader();
-            GridView1.DataSource = rdr;
-            GridView1.DataBind();
+            while (rdr.Read())
+            {
+                String name = rdr.GetString(rdr.GetOrdinal("username"));
+                Label n = new Label();
+                n.Text = name;
+                form1.Controls.Add(n)
+            }
             conn.Close();
 
         }
