@@ -73,6 +73,7 @@
     </Content>
     <Content Include="ClubRepresentativeMainScreen.aspx" />
     <Content Include="CRRegister.aspx" />
+    <Content Include="FanMainScreen.aspx" />
     <Content Include="FanRegister.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Register.aspx" />
@@ -96,6 +97,13 @@
     </Compile>
     <Compile Include="CRRegister.aspx.designer.cs">
       <DependentUpon>CRRegister.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FanMainScreen.aspx.cs">
+      <DependentUpon>FanMainScreen.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FanMainScreen.aspx.designer.cs">
+      <DependentUpon>FanMainScreen.aspx</DependentUpon>
     </Compile>
     <Compile Include="FanRegister.aspx.cs">
       <DependentUpon>FanRegister.aspx</DependentUpon>
