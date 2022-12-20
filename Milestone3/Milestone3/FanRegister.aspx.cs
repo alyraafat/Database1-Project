@@ -112,6 +112,7 @@ namespace Milestone3
                 }
                 
             }
+            Session["user"] = userName;
             conn.Close();  
         }
     }

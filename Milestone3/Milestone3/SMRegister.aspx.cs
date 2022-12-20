@@ -91,6 +91,7 @@ namespace Milestone3
                     Response.Write("existing username");
                 }
             }
+            Session["user"] = userName;
             conn.Close();
         }
     }

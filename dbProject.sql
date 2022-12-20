@@ -1054,7 +1054,16 @@ CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20
 		WHERE host.name = @clubName AND S.name = @stadiumName
 GO;
 
-
-
+--------------------------------------------------------
+--added proc
+GO;
+CREATE PROC getClubOfRep
+	@username VARCHAR(20)
+	AS
+	SELECT C.name , C.location
+	From ClubRepresentative R
+		INNER JOIN Club C ON C.id = R.club_id
+	WHERE R.username = @username
+GO;
 
 	

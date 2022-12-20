@@ -71,6 +71,7 @@
     <Content Include="App_Data\Database1_log.ldf">
       <DependentUpon>Database1.mdf</DependentUpon>
     </Content>
+    <Content Include="ClubRepresentativeMainScreen.aspx" />
     <Content Include="CRRegister.aspx" />
     <Content Include="FanRegister.aspx" />
     <Content Include="Login.aspx" />
@@ -82,6 +83,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClubRepresentativeMainScreen.aspx.cs">
+      <DependentUpon>ClubRepresentativeMainScreen.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ClubRepresentativeMainScreen.aspx.designer.cs">
+      <DependentUpon>ClubRepresentativeMainScreen.aspx</DependentUpon>
+    </Compile>
     <Compile Include="CRRegister.aspx.cs">
       <DependentUpon>CRRegister.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

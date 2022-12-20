@@ -40,7 +40,6 @@ namespace Milestone3
             SqlCommand allUsers = new SqlCommand(user, conn);
 
 
-
             conn.Open();
             SqlDataReader assocReader = allAssoc.ExecuteReader();
             ArrayList AListUsernames = new ArrayList();
@@ -109,7 +108,10 @@ namespace Milestone3
                 if (passWord != password)
                     Response.Write("Wrong password");
                 else
-                    Response.Write("2sad");
+                {
+                    Session["user"] = userName;
+                    Response.Redirect("SportsAssociationManagerMainScreen.aspx");
+                }
             }
             else if (CListUsernames.Contains(userName))
             {
@@ -118,7 +120,10 @@ namespace Milestone3
                 if (passWord != password)
                     Response.Write("Wrong password");
                 else
-                    Response.Write("2sad");
+                {
+                    Session["user"] = userName;
+                    Response.Redirect("ClubRepresentativeMainScreen.aspx");
+                }
             }
             else if (SListUsernames.Contains(userName))
             {
@@ -127,7 +132,10 @@ namespace Milestone3
                 if (passWord != password)
                     Response.Write("Wrong password");
                 else
+                {
+                    Session["user"] = userName;
                     Response.Write("2sad");
+                }
             }
             else if (FListUsernames.Contains(userName))
             {
@@ -136,7 +144,10 @@ namespace Milestone3
                 if (passWord != password)
                     Response.Write("Wrong password");
                 else
+                {
+                    Session["user"] = userName;
                     Response.Write("2sad");
+                }
             }
             else
             {
@@ -145,9 +156,11 @@ namespace Milestone3
                 if (passWord != password)
                     Response.Write("Wrong password");
                 else
-                    Response.Write("2sad");
+                {
+                    Response.Redirect("SystemAdminMainScreen.aspx");
+                    Session["user"] = userName;
+                }
             }
-
             conn.Close();
 
         }
