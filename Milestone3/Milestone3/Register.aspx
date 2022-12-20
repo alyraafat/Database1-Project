@@ -8,32 +8,16 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <div>
-            Register<br />
-            Name:</div>
-        <p>
-            <asp:TextBox ID="name" runat="server" Height="16px"></asp:TextBox>
-        </p>
-        <p>
-            <asp:Label ID="Label1" runat="server" Text="Username"></asp:Label>
-            :</p>
-        <p>
-            <asp:TextBox ID="username" runat="server"></asp:TextBox>
-        </p>
-        <p>
-            Password:</p>
-        <p>
-            <asp:TextBox ID="password" runat="server"></asp:TextBox>
-        </p>
-        <p>
-            <asp:DropDownList ID="DropDownList1" runat="server">
-                <asp:ListItem>Sports Association Manager</asp:ListItem>
-                <asp:ListItem>Fan</asp:ListItem>
-                <asp:ListItem>Club Representative</asp:ListItem>
-                <asp:ListItem>Stadium Manager</asp:ListItem>
-            </asp:DropDownList>
-        </p>
-        <asp:Button ID="Button" runat="server" OnClick="register" Text="Register" />
+        <asp:Button ID="sam" runat="server" Text="Sports Association Manager" OnClick="sam_Click" />
+            <br />
+            <br />
+            <asp:Button ID="sm" runat="server" Text="Stadium Manager" OnClick="sm_Click" />
+            <br />
+            <br />
+        <asp:Button ID="cr" runat="server" Text="Club Representative" OnClick="cr_Click" />
+            <br />
+            <br />
+            <asp:Button ID="fan" runat="server" Text="Fan" OnClick="fan_Click" />
     </form>
 </body>
 </html>

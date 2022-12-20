@@ -14,6 +14,7 @@ insert into Stadium(name,status,location,capacity) values('Allianz arena',0, 'Mu
 insert into Club(name,location) values( 'Chelsea','London')
 insert into Club(name,location) values( 'Bayern Munich','Munich')
 insert into Club(name,location) values( 'Barcelona','Barcelona')
+insert into Club(name,location) values( 'ahly','cairo')
 
 
 insert into SystemUser(username,password) values('shobeer','sara123')
@@ -89,6 +90,7 @@ SELECT * FROM Ticket;
 SELECT * FROM TicketBuyingTransactions;
 SELECT * FROM HostRequest;
 
+DELETE FROM SystemUser WHERE username = ''
 DELETE FROM HostRequest WHERE match_id IS NULL 
 EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
 

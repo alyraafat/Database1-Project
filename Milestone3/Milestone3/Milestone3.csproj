@@ -71,11 +71,29 @@
     <Content Include="App_Data\Database1_log.ldf">
       <DependentUpon>Database1.mdf</DependentUpon>
     </Content>
+    <Content Include="CRRegister.aspx" />
+    <Content Include="FanRegister.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Register.aspx" />
+    <Content Include="SAMRegister.aspx" />
+    <Content Include="SMRegister.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CRRegister.aspx.cs">
+      <DependentUpon>CRRegister.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CRRegister.aspx.designer.cs">
+      <DependentUpon>CRRegister.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FanRegister.aspx.cs">
+      <DependentUpon>FanRegister.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FanRegister.aspx.designer.cs">
+      <DependentUpon>FanRegister.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -90,6 +108,20 @@
     </Compile>
     <Compile Include="Register.aspx.designer.cs">
       <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SAMRegister.aspx.cs">
+      <DependentUpon>SAMRegister.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SAMRegister.aspx.designer.cs">
+      <DependentUpon>SAMRegister.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SMRegister.aspx.cs">
+      <DependentUpon>SMRegister.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SMRegister.aspx.designer.cs">
+      <DependentUpon>SMRegister.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
