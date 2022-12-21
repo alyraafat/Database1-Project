@@ -1117,3 +1117,13 @@ CREATE FUNCTION requests(@stadiumName varchar(20))
 		WHERE S.name = @stadiumName
 GO;
 DROP FUNCTION requests
+
+GO;
+
+CREATE View getMatches2 AS
+	SELECT c1.name AS Host , c2.name AS Guest , M.start_time , M.end_time
+	FROM Match M
+	INNER JOIN Club c1 on M.host_id = c1.id
+	INNER JOIN Club c2 on M.guest_id = c2.id
+
+GO;

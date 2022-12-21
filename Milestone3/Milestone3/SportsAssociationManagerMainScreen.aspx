@@ -117,6 +117,40 @@
             </div>
         <asp:Button ID="Button2" runat="server" OnClick ="deleteMatchButton" Text="Delete Match" />
         <br />
+        <br />
+        Upcoming Matches:<br />
+        <br />
+            <asp:GridView ID="matches" runat="server" AutoGenerateColumns="false">
+                <Columns>
+                    <asp:BoundField DataField="host_club_name" HeaderText="Host Club" />
+                    <asp:BoundField DataField="guest_club_name" HeaderText="Guest Club" />
+                    <asp:BoundField DataField="start_time" HeaderText="Start Time" />
+                    <asp:BoundField DataField="end_time" HeaderText="End Time" />
+                </Columns>
+            </asp:GridView>
+            <br />
+        Already Played Matches:<br />
+        <br />
+            <asp:GridView ID="matches0" runat="server" AutoGenerateColumns="false">
+                <Columns>
+                    <asp:BoundField DataField="host_club_name" HeaderText="Host Club" />
+                    <asp:BoundField DataField="guest_club_name" HeaderText="Guest Club" />
+                    <asp:BoundField DataField="start_time" HeaderText="Start Time" />
+                    <asp:BoundField DataField="end_time" HeaderText="End Time" />
+                </Columns>
+            </asp:GridView>
+            <br />
+        Clubs Never Played Each other:<br />
+        <br />
+            <asp:GridView ID="neverPlaying" runat="server" AutoGenerateColumns="false">
+                <Columns>
+                    <asp:BoundField DataField="club1_name" HeaderText="Host Club" />
+                    <asp:BoundField DataField="club2_name" HeaderText="Guest Club" />
+                </Columns>
+            </asp:GridView>
+            <br />
+            <br />
+        <br />
     </form>
 </body>
 </html>

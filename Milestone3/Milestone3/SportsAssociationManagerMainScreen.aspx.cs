@@ -11,6 +11,7 @@ using System.Web.Configuration;
 using System.Web.DynamicData;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Xml.Linq;
 
 namespace Milestone3
 {
@@ -18,7 +19,57 @@ namespace Milestone3
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
+            SqlConnection conn = new SqlConnection(connStr);
+     //       String username = Session["user"].ToString();
+            conn.Open();
+            //get upcoming matches
+            SqlCommand getMatches = new SqlCommand("SELECT * FROM getUpcomingMatches2", conn);
+            SqlDataAdapter da = new SqlDataAdapter(getMatches);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            if (dt.Rows.Count == 0)
+            {
+                Label empty = new Label();
+                empty.Text = "No upcoming matches";
+                form1.Controls.Add(empty);
+            }
+            else
+            {
+                matches.DataSource = dt;
+                matches.DataBind();
+            }
+            SqlCommand getAlreadyMatches = new SqlCommand("SELECT * FROM getAlreadyPlayedMatches2", conn);
+            SqlDataAdapter da2 = new SqlDataAdapter(getAlreadyMatches);
+            DataTable dt2 = new DataTable();
+            da2.Fill(dt2);
+            if (dt2.Rows.Count == 0)
+            {
+                Label empty = new Label();
+                empty.Text = "No upcoming matches";
+                form1.Controls.Add(empty);
+            }
+            else
+            {
+                matches0.DataSource = dt2;
+                matches0.DataBind();
+            }
+            SqlCommand clubsNeverPlaying = new SqlCommand("SELECT * FROM clubsNeverMatched", conn);
+            SqlDataAdapter da3 = new SqlDataAdapter(clubsNeverPlaying);
+            DataTable dt3 = new DataTable();
+            da3.Fill(dt3);
+            if (dt3.Rows.Count == 0)
+            {
+                Label empty = new Label();
+                empty.Text = "No upcoming matches";
+                form1.Controls.Add(empty);
+            }
+            else
+            {
+                neverPlaying.DataSource = dt3;
+                neverPlaying.DataBind();
+            }
+            conn.Close();
         }
         protected void addMatchButton(object sender, EventArgs e) {
             String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
