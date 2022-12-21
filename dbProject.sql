@@ -1078,3 +1078,17 @@ CREATE FUNCTION upcomingMatchesOfClub2 (@clubName VARCHAR(20))
 			LEFT OUTER JOIN Stadium S on S.id=M.stadium_id
 		WHERE  (C.name = @clubName OR C2.name = @clubName) AND M.start_time> CURRENT_TIMESTAMP
 GO;
+
+CREATE FUNCTION availableMatchesToAttend2 (@date DATETIME)
+	RETURNS TABLE
+	AS
+
+	RETURN 
+		SELECT C.name AS host_club_name, C2.name AS guest_club_name,S.name AS stadium_name, S.location
+		FROM Match M 
+			INNER JOIN Club C ON C.id = M.host_id
+			INNER JOIN Club C2 on C2.id =M.guest_id
+			INNER JOIN Stadium S on S.id=M.stadium_id
+			INNER JOIN Ticket T on T.match_id=M.id
+		WHERE T.status=1 AND M.start_time>=@date
+GO;

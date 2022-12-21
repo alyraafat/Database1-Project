@@ -42,6 +42,20 @@
         <p>
             <asp:Button ID="Button1" runat="server" Height="32px" Text="Purchase Ticket" OnClick = "onPurchaseClick" />
         </p>
+        <h4>Enter date to see available matches</h4>
+        <asp:TextBox ID="dateOfAvailableMatches" runat="server"></asp:TextBox>
+        <br />
+        <br />
+        <asp:Button ID="Button2" runat="server" onClick="showAvailableMatches" Text="Show" />
+        <br />
+        <asp:GridView ID="availableMatches" runat="server" AutoGenerateColumns="false">
+            <Columns>
+                <asp:BoundField DataField="host_club_name" HeaderText="Host Club" />
+                <asp:BoundField DataField="guest_club_name" HeaderText="Guest Club" />
+                <asp:BoundField DataField="stadium_name" HeaderText="Stadium Name" />
+                <asp:BoundField DataField="location" HeaderText="Stadium Location" />
+            </Columns>
+        </asp:GridView>
     </form>
 </body>
 </html>

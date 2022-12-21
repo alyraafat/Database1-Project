@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Configuration;
@@ -100,6 +101,37 @@ namespace Milestone3
             }
             catch (FormatException) {
                 Response.Write("wrong date format");
+            }
+        }
+
+        protected void showAvailableMatches(object sender, EventArgs e)
+        {
+            String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
+            SqlConnection conn = new SqlConnection(connStr);
+            //get available Matches
+            if (dateOfAvailableMatches.Text.Length > 20 || dateOfAvailableMatches.Text.Length == 0)
+            {
+                Response.Write("date is too long or empty");
+            }
+            else
+            {
+                DateTime date;
+                if (!DateTime.TryParseExact(dateOfAvailableMatches.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                {
+                    Response.Write("Write date in this format yyyy-mm-dd hh:mm:ss");
+                }
+                else
+                {
+                    conn.Open();
+                    SqlCommand getAvailableMatches = new SqlCommand("SELECT * FROM dbo.availableMatchesToAttend2(@datetime)", conn);
+                    getAvailableMatches.Parameters.AddWithValue("@datetime", date);
+                    SqlDataAdapter da = new SqlDataAdapter(getAvailableMatches);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    availableMatches.DataSource = dt;
+                    availableMatches.DataBind();
+                    conn.Close();
+                }
             }
         }
     }
