@@ -53,6 +53,10 @@ insert into ClubRepresentative(username,name,club_id) values('pep.guardiola','pe
 insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/10/10 9:45:00','2022/10/10 11:00:00',2,1,2)
 insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/11/20 7:45:00','2022/11/20 9:00:00',1,3,2)
 insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/9/11 8:00:00','2022/9/11 11:00:00',3,2,1)
+insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/12/30 9:45:00','2022/10/10 11:00:00',2,1,2)
+insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/12/28 7:45:00','2022/11/20 9:00:00',1,3,2)
+insert into Match(start_time,end_time,stadium_id,host_id,guest_id) values('2022/12/29 8:00:00','2022/9/11 11:00:00',3,2,1)
+insert into Match(start_time,end_time,host_id,guest_id) values('2022/12/27 8:00:00','2022/9/11 11:00:00',2,1)
 
 
 insert into Ticket(status,match_id) values(0,1)
@@ -93,9 +97,7 @@ SELECT * FROM HostRequest;
 DELETE FROM SystemUser WHERE username = ''
 DELETE FROM HostRequest WHERE match_id IS NULL 
 EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
-
-
-
+EXEC addHostRequest @clubName='Bayern Munich',@stadiumName='Allianz arena', @startTime='2022/12/27 08:00:00'
 --Test inserting into stadiums
 INSERT INTO Stadium (name,capacity,location) VALUES
 ('camp nou',1000,'bar'),

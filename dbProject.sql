@@ -1066,4 +1066,15 @@ CREATE PROC getClubOfRep
 	WHERE R.username = @username
 GO;
 
-	
+CREATE FUNCTION upcomingMatchesOfClub2 (@clubName VARCHAR(20))
+	RETURNS TABLE
+	AS
+
+	RETURN 
+		SELECT C.name AS host_club_name, C2.name AS competing_club_name,M.start_time,M.end_time,S.name AS stadium_name
+		FROM Match M 
+			INNER JOIN Club C ON C.id = M.host_id
+			INNER JOIN Club C2 on C2.id = M.guest_id
+			LEFT OUTER JOIN Stadium S on S.id=M.stadium_id
+		WHERE  (C.name = @clubName OR C2.name = @clubName) AND M.start_time> CURRENT_TIMESTAMP
+GO;
