@@ -1,12 +1,14 @@
 ﻿insert into SystemUser(username,password) values('sara.amr','sara123')
 insert into SystemUser(username,password) values('malak.amer','malak123')
 insert into SystemUser(username,password) values('ahmed.amer','ahmed123')
+insert into SystemUser(username,password) values('ahmed.amer2','ahmed123')
 
 insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('812','sara.amr',01021112055,'sara','7daye2',0,'01/05/2002')
 insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3428','malak.amer',01000981553,'malak','nargis3',0,'8/12/2002')
 insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('3434','ahmed.amer',01021112055,'ahmed','nargis3',1,'8/12/2002')
+insert into Fan(national_id,username,phone,name,address,status,birth_date) values ('4502','ahmed.amer2',01021112055,'ahmed','nargis3',1,'8/12/2002')
 
-
+select * From Ticket
 insert into Stadium(name,status,location,capacity) values('Camp nou',1, 'Barcelona',80000)
 insert into Stadium(name,status,location,capacity) values('Stamford bridge',1, 'London',45000)
 insert into Stadium(name,status,location,capacity) values('Allianz arena',0, 'Munich',70000)
@@ -368,7 +370,8 @@ EXEC purchaseTicket
 	@startTime='2022/10/10 09:45:00'
 
 --2.3 xxv
-
+select * From Fan;
+select * From Ticket;
 --2.3 xxvi
 --Test MatchPerTeam
 DROP VIEW matchesPerTeam;
