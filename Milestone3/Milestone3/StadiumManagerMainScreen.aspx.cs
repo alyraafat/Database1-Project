@@ -76,27 +76,6 @@ namespace Milestone3
             }   
         }
 
-        protected void acceptRequest(object sender, EventArgs e)
-        {
-            String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
-            SqlConnection conn = new SqlConnection(connStr);
-            String username = Session["user"].ToString();
-            SqlCommand accept = new SqlCommand("acceptRequest", conn);
-            accept.CommandType = CommandType.StoredProcedure;
-            accept.Parameters.Add(new SqlParameter("@stadiumManagerUserName", username));
-            accept.Parameters.Add(new SqlParameter("@hostingClubName", requests.SelectedRow.Cells[1].Text));
-            accept.Parameters.Add(new SqlParameter("@guestClubName", requests.SelectedRow.Cells[2].Text));
-            accept.Parameters.Add(new SqlParameter("@matchStartTime", requests.SelectedRow.Cells[3].Text));
-
-            conn.Open();
-           // accept.ExecuteNonQuery();
-            conn.Close();
-        }
-        protected void rejectRequest(object sender, EventArgs e)
-        {
-
-        }
-
         protected void requestsRowCommand(object sender, GridViewCommandEventArgs e)
         {
             String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
