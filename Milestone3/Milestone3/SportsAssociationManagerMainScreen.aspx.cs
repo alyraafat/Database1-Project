@@ -21,7 +21,7 @@ namespace Milestone3
         {
             String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
             SqlConnection conn = new SqlConnection(connStr);
-     //       String username = Session["user"].ToString();
+            String username = Session["user"].ToString();
             conn.Open();
             //get upcoming matches
             SqlCommand getMatches = new SqlCommand("SELECT * FROM getUpcomingMatches2", conn);

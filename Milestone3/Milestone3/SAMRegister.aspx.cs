@@ -61,13 +61,14 @@ namespace Milestone3
                 if (!UListUsernames.Contains(userName))
                 {
                     addSAM.ExecuteNonQuery();
+                    Session["user"] = userName;
+                    Response.Redirect("Login.aspx");
                 }
                 else
                 {
                     Response.Write("existing username");
                 }
             }
-            Session["user"] = userName;
             conn.Close();
         }
     }

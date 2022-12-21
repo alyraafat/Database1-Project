@@ -104,6 +104,8 @@ namespace Milestone3
                     if (!UListUsernames.Contains(userName))
                     {
                         addFan.ExecuteNonQuery();
+                        Session["user"] = userName;
+                        Response.Redirect("Login.aspx");
                     }
                     else
                     {
@@ -112,7 +114,7 @@ namespace Milestone3
                 }
                 
             }
-            Session["user"] = userName;
+            
             conn.Close();  
         }
     }

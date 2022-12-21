@@ -84,6 +84,8 @@ namespace Milestone3
                     else
                     {
                         addSM.ExecuteNonQuery();
+                        Session["user"] = userName;
+                        Response.Redirect("Login.aspx");
                     }
                 }
                 else
@@ -91,7 +93,6 @@ namespace Milestone3
                     Response.Write("existing username");
                 }
             }
-            Session["user"] = userName;
             conn.Close();
         }
     }
