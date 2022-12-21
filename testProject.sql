@@ -96,10 +96,16 @@ SELECT * FROM Ticket;
 SELECT * FROM TicketBuyingTransactions;
 SELECT * FROM HostRequest;
 
-DELETE FROM SystemUser WHERE username = ''
+DELETE FROM HostRequest WHERE id = 4
+UPDATE HostRequest SET status = 'unhandled' WHERE id=5
+UPDATE Stadium SET capacity = 5 WHERE name='Allianz arena'
 DELETE FROM HostRequest WHERE match_id IS NULL 
 EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/20 05:00:00', @endtime='2022/12/20 07:00:00'
+EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/12/30 07:00:00', @endtime='2022/12/30 09:00:00'
+EXEC addNewMatch @hostclub='Bayern Munich' ,@guestclub='Barcelona', @starttime='2023/01/15 07:00:00', @endtime='2023/01/15 09:00:00'
 EXEC addHostRequest @clubName='Bayern Munich',@stadiumName='Allianz arena', @startTime='2022/12/27 08:00:00'
+EXEC addHostRequest @clubName='Chelsea',@stadiumName='Allianz arena', @startTime='2022/12/30 07:00:00'
+EXEC addHostRequest @clubName='Bayern Munich',@stadiumName='Allianz arena', @startTime='2023/01/15 07:00:00'
 --Test inserting into stadiums
 INSERT INTO Stadium (name,capacity,location) VALUES
 ('camp nou',1000,'bar'),

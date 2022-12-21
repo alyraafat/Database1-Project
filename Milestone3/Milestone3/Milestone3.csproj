@@ -79,6 +79,7 @@
     <Content Include="Register.aspx" />
     <Content Include="SAMRegister.aspx" />
     <Content Include="SMRegister.aspx" />
+    <Content Include="StadiumManagerMainScreen.aspx" />
     <Content Include="SystemAdminMainScreen.aspx" />
     <Content Include="SportsAssociationManagerMainScreen.aspx" />
     <Content Include="Web.config" />
@@ -140,6 +141,13 @@
     </Compile>
     <Compile Include="SMRegister.aspx.designer.cs">
       <DependentUpon>SMRegister.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="StadiumManagerMainScreen.aspx.cs">
+      <DependentUpon>StadiumManagerMainScreen.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="StadiumManagerMainScreen.aspx.designer.cs">
+      <DependentUpon>StadiumManagerMainScreen.aspx</DependentUpon>
     </Compile>
     <Compile Include="SystemAdminMainScreen.aspx.cs">
       <DependentUpon>SystemAdminMainScreen.aspx</DependentUpon>

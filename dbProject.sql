@@ -1055,7 +1055,7 @@ CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20
 GO;
 
 --------------------------------------------------------
---added proc
+--added proc & functions
 GO;
 CREATE PROC getClubOfRep
 	@username VARCHAR(20)
@@ -1092,3 +1092,28 @@ CREATE FUNCTION availableMatchesToAttend2 (@date DATETIME)
 			INNER JOIN Ticket T on T.match_id=M.id
 		WHERE T.status=1 AND M.start_time>=@date
 GO;
+
+CREATE PROC getStadiumOfManager 
+@username VARCHAR(20)
+AS
+	SELECT S.name, S.location, S.capacity, S.status
+	FROM StadiumManager M
+		INNER JOIN Stadium S ON S.id = M.stadium_id
+	WHERE M.username=@username
+GO;
+
+CREATE FUNCTION requests(@stadiumName varchar(20))
+	RETURNS TABLE 
+	AS
+	RETURN 
+		SELECT H.id,CR.name AS cr_name,host.name AS host_club, guest.name AS guest_club,Mat.start_time,Mat.end_time,H.status
+		FROM Match Mat
+			INNER JOIN Club host on Mat.host_id = host.id
+			INNER JOIN Club guest on Mat.guest_id = guest.id
+			INNER JOIN HostRequest H ON H.match_id = Mat.id
+			INNER JOIN StadiumManager SM ON H.smd = SM.id 
+			INNER JOIN ClubRepresentative CR ON CR.club_id = H.crd
+			INNER JOIN Stadium S ON S.id = SM.stadium_id
+		WHERE S.name = @stadiumName
+GO;
+DROP FUNCTION requests

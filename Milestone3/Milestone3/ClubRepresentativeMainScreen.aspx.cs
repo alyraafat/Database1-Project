@@ -43,8 +43,18 @@ namespace Milestone3
             SqlDataAdapter da = new SqlDataAdapter(getMatches);
             DataTable dt = new DataTable();
             da.Fill(dt);
-            matches.DataSource= dt;
-            matches.DataBind();
+            if (dt.Rows.Count == 0)
+            {
+                Label empty = new Label();
+                empty.Text = "No upcoming matches";
+                form1.Controls.Add(empty);
+            }
+            else
+            {
+                matches.DataSource= dt;
+                matches.DataBind();
+            }
+      
 
             //getStadiumManagers
             if (!IsPostBack)
@@ -100,8 +110,18 @@ namespace Milestone3
                     SqlDataAdapter da2 = new SqlDataAdapter(getAvailableStadiums);
                     DataTable dt2 = new DataTable();
                     da2.Fill(dt2);
-                    availableStadiums.DataSource = dt2;
-                    availableStadiums.DataBind();
+                    if (dt2.Rows.Count == 0)
+                    {
+                        Label empty = new Label();
+                        empty.Text = "No available stadiums";
+                        form1.Controls.Add(empty);
+                    }
+                    else
+                    {
+                        availableStadiums.DataSource = dt2;
+                        availableStadiums.DataBind();
+                    }
+                    
                     conn.Close();
                 }
             } 

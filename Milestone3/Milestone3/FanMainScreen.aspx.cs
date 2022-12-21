@@ -21,8 +21,8 @@ namespace Milestone3
         {
             try
             {
-                //String username = Session["user"].ToString();
-                String username = "ahmed.amer2";
+                String username = Session["user"].ToString();
+                //String username = "ahmed.amer2";
                 String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
                 SqlConnection conn = new SqlConnection(connStr);
 
@@ -128,8 +128,18 @@ namespace Milestone3
                     SqlDataAdapter da = new SqlDataAdapter(getAvailableMatches);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
-                    availableMatches.DataSource = dt;
-                    availableMatches.DataBind();
+                    if (dt.Rows.Count == 0)
+                    {
+                        Label empty = new Label();
+                        empty.Text = "No available Matches";
+                        form1.Controls.Add(empty);
+                    }
+                    else
+                    {
+                        availableMatches.DataSource = dt;
+                        availableMatches.DataBind();
+                    }
+                   
                     conn.Close();
                 }
             }

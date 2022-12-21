@@ -134,7 +134,7 @@ namespace Milestone3
                 else
                 {
                     Session["user"] = userName;
-                    Response.Write("2sad");
+                    Response.Redirect("StadiumManagerMainScreen.aspx");
                 }
             }
             else if (FListUsernames.Contains(userName))
@@ -146,7 +146,7 @@ namespace Milestone3
                 else
                 {
                     Session["user"] = userName;
-                    Response.Write("2sad");
+                    Response.Redirect("FanMainScreen.aspx");
                 }
             }
             else
