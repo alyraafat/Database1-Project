@@ -35,7 +35,8 @@
                 Date:
             </h4>
             <br />
-            <asp:TextBox ID="dateInput" runat="server"></asp:TextBox>
+            <asp:TextBox ID="dateInput" runat="server" type="date"></asp:TextBox>
+            <br />
             <br />
             <asp:Button ID="show" runat="server" onClick="showStadium" Text="Show" />
             <br />
@@ -53,10 +54,10 @@
             <asp:DropDownList ID="smdd" AutoPostBack = "true" runat="server"></asp:DropDownList>
             <br />
             <h4>
-                Date:
+                Date Of Request:
             </h4>
             <br />
-            <asp:TextBox ID="dateOfRequest" runat="server"></asp:TextBox>
+            <asp:TextBox ID="dateOfRequest" runat="server" type="datetime-local"></asp:TextBox>
             <br />
             <asp:Button ID="Button1" runat="server" onClick="sendRequest" Text="Send" />
         </div>

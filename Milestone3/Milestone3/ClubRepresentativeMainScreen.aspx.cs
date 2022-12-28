@@ -98,32 +98,36 @@ namespace Milestone3
             else
             {
                 DateTime date;
-                if (!DateTime.TryParseExact(dateInput.Text, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                Response.Write(dateInput.Text);
+                Response.Write("--------------");
+                DateTime.TryParseExact(dateInput.Text, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out date);
+                Response.Write(date.ToString());
+                //if (!DateTime.TryParseExact(dateInput.Text, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                //{
+                //  Response.Write("Write date in this format yyyy-mm-dd");
+                //}
+                // else
+                //{
+                conn.Open();
+                SqlCommand getAvailableStadiums = new SqlCommand("SELECT * FROM dbo.viewAvailableStadiumsOn(@datetime)", conn);
+                getAvailableStadiums.Parameters.AddWithValue("@datetime", date);
+                SqlDataAdapter da2 = new SqlDataAdapter(getAvailableStadiums);
+                DataTable dt2 = new DataTable();
+                da2.Fill(dt2);
+                if (dt2.Rows.Count == 0)
                 {
-                    Response.Write("Write date in this format yyyy-mm-dd");
+                    Label empty = new Label();
+                    empty.Text = "No available stadiums";
+                    form1.Controls.Add(empty);
                 }
                 else
                 {
-                    conn.Open();
-                    SqlCommand getAvailableStadiums = new SqlCommand("SELECT * FROM dbo.viewAvailableStadiumsOn(@datetime)", conn);
-                    getAvailableStadiums.Parameters.AddWithValue("@datetime", date);
-                    SqlDataAdapter da2 = new SqlDataAdapter(getAvailableStadiums);
-                    DataTable dt2 = new DataTable();
-                    da2.Fill(dt2);
-                    if (dt2.Rows.Count == 0)
-                    {
-                        Label empty = new Label();
-                        empty.Text = "No available stadiums";
-                        form1.Controls.Add(empty);
-                    }
-                    else
-                    {
-                        availableStadiums.DataSource = dt2;
-                        availableStadiums.DataBind();
-                    }
-                    
-                    conn.Close();
+                    availableStadiums.DataSource = dt2;
+                    availableStadiums.DataBind();
                 }
+                    
+                conn.Close();
+               // }
             } 
         }
 
@@ -138,23 +142,24 @@ namespace Milestone3
             else
             {
                 conn.Open();
-                DateTime date;
-                if (!DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
-                {
-                    Response.Write("Write date of request in this format yyyy-mm-dd hh:mm:ss");
-                }
-                else
-                {
-                    SqlCommand addHostRequest = new SqlCommand("addHostRequest", conn);
-                    addHostRequest.CommandType = CommandType.StoredProcedure;
-                    addHostRequest.Parameters.Add(new SqlParameter("@clubName", name.Text));
-                    addHostRequest.Parameters.Add(new SqlParameter("@stadiumName", smdd.Text));
-                    addHostRequest.Parameters.Add(new SqlParameter("@startTime", date));
-                    Response.Write(name.Text);
-                    Response.Write(smdd.Text);
-                    Response.Write(date);
-                    addHostRequest.ExecuteNonQuery();
-                }
+                DateTime date = Convert.ToDateTime(dateOfRequest.Text);
+                //DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date);
+                //if (!DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                // {
+                //   Response.Write("Write date of request in this format yyyy-mm-dd hh:mm:ss");
+                // }
+                // else
+                // {
+                SqlCommand addHostRequest = new SqlCommand("addHostRequest", conn);
+                addHostRequest.CommandType = CommandType.StoredProcedure;
+                addHostRequest.Parameters.Add(new SqlParameter("@clubName", name.Text));
+                addHostRequest.Parameters.Add(new SqlParameter("@stadiumName", smdd.Text));
+                addHostRequest.Parameters.Add(new SqlParameter("@startTime", date));
+                Response.Write(name.Text);
+                Response.Write(smdd.Text);
+                Response.Write(date);
+                addHostRequest.ExecuteNonQuery();
+            //}
                 conn.Close();
             }
             
