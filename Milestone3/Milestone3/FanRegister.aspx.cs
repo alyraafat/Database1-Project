@@ -29,19 +29,14 @@ namespace Milestone3
             String natId = nationalId.Text;
             String ph = phone.Text;
             String add = address.Text;
-            String bd = birthDate.Text;
+            //String bd = birthDate.Text;
+            
             String user = "SELECT * from SystemUser";
             SqlCommand allUsers = new SqlCommand(user, conn);
             SqlCommand addFan = new SqlCommand("addFan", conn);
             addFan.CommandType = CommandType.StoredProcedure;
-            addFan.Parameters.Add(new SqlParameter("@name", Name));
-            addFan.Parameters.Add(new SqlParameter("@password", passWord));
-            addFan.Parameters.Add(new SqlParameter("@username", userName));
-            addFan.Parameters.Add(new SqlParameter("@nationalIdNumber", natId));
-            addFan.Parameters.Add(new SqlParameter("@phoneNumber", ph));
-            addFan.Parameters.Add(new SqlParameter("@address", add));
-            addFan.Parameters.Add(new SqlParameter("@birthDate", bd));
-            DateTime result;
+            
+            //DateTime result;
             String fan = "SELECT * from allFans";
             SqlCommand allFans = new SqlCommand(fan, conn);
             conn.Open();
@@ -70,9 +65,9 @@ namespace Milestone3
             {
                 Response.Write("address is too long or empty");
             }
-            else if (bd.Length > 20 || bd.Length == 0 || !DateTime.TryParseExact(bd, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out result))
+            else if (birthDate.Text.Length > 20 || birthDate.Text.Length == 0 )
             {
-                Response.Write("birth date is too long or empty or not in right format, should be (yyyy-MM-dd)");
+                Response.Write("birth date is too long or empty");
             }
             else
             {
@@ -103,6 +98,16 @@ namespace Milestone3
                     userReader.Close();
                     if (!UListUsernames.Contains(userName))
                     {
+                        DateTime bd = DateTime.Parse(birthDate.Text);
+                        String date = bd.ToString("yyyy-MM-dd");
+                        bd = DateTime.Parse(date);
+                        addFan.Parameters.Add(new SqlParameter("@name", Name));
+                        addFan.Parameters.Add(new SqlParameter("@password", passWord));
+                        addFan.Parameters.Add(new SqlParameter("@username", userName));
+                        addFan.Parameters.Add(new SqlParameter("@nationalIdNumber", natId));
+                        addFan.Parameters.Add(new SqlParameter("@phoneNumber", ph));
+                        addFan.Parameters.Add(new SqlParameter("@address", add));
+                        addFan.Parameters.Add(new SqlParameter("@birthDate", bd));
                         addFan.ExecuteNonQuery();
                         Session["user"] = userName;
                         Response.Redirect("Login.aspx");

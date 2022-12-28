@@ -36,7 +36,7 @@
                 Stadium Name:
             </h3>
             <br />
-            <asp:TextBox ID="stadium" runat="server"></asp:TextBox>
+            <asp:DropDownList ID="stadiums" runat="server" DataTextField="name" DataValueField="name" DataSourceID="SqlDataSource1" AutoPostBack="True"></asp:DropDownList><asp:SqlDataSource runat="server" ID="SqlDataSource1" ConnectionString="<%$ ConnectionStrings:FootballDBConnectionString %>" SelectCommand="SELECT [name] FROM [Stadium]"></asp:SqlDataSource>
             <br />
             <br />
            <asp:Button ID="register" runat="server" onClick="smReg" Text="Register" />

@@ -43,7 +43,7 @@
             <asp:Button ID="Button1" runat="server" Height="32px" Text="Purchase Ticket" OnClick = "onPurchaseClick" />
         </p>
         <h4>Enter date to see available matches</h4>
-        <asp:TextBox ID="dateOfAvailableMatches" runat="server"></asp:TextBox>
+        <asp:TextBox ID="dateOfAvailableMatches" runat="server" type="datetime-local"></asp:TextBox>
         <br />
         <br />
         <asp:Button ID="Button2" runat="server" onClick="showAvailableMatches" Text="Show" />

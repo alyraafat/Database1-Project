@@ -115,33 +115,35 @@ namespace Milestone3
             }
             else
             {
-                DateTime date;
-                if (!DateTime.TryParseExact(dateOfAvailableMatches.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                DateTime date = DateTime.Parse(dateOfAvailableMatches.Text);
+                String date2 = date.ToString("yyyy-MM-dd HH:mm:ss");
+                date = DateTime.Parse(date2);
+                //if (!DateTime.TryParseExact(dateOfAvailableMatches.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+               // {
+                //    Response.Write("Write date in this format yyyy-mm-dd hh:mm:ss");
+               // }
+               // else
+               // {
+                conn.Open();
+                SqlCommand getAvailableMatches = new SqlCommand("SELECT * FROM dbo.availableMatchesToAttend2(@datetime)", conn);
+                getAvailableMatches.Parameters.AddWithValue("@datetime", date);
+                SqlDataAdapter da = new SqlDataAdapter(getAvailableMatches);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count == 0)
                 {
-                    Response.Write("Write date in this format yyyy-mm-dd hh:mm:ss");
+                    Label empty = new Label();
+                    empty.Text = "No available Matches";
+                    form1.Controls.Add(empty);
                 }
                 else
                 {
-                    conn.Open();
-                    SqlCommand getAvailableMatches = new SqlCommand("SELECT * FROM dbo.availableMatchesToAttend2(@datetime)", conn);
-                    getAvailableMatches.Parameters.AddWithValue("@datetime", date);
-                    SqlDataAdapter da = new SqlDataAdapter(getAvailableMatches);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    if (dt.Rows.Count == 0)
-                    {
-                        Label empty = new Label();
-                        empty.Text = "No available Matches";
-                        form1.Controls.Add(empty);
-                    }
-                    else
-                    {
-                        availableMatches.DataSource = dt;
-                        availableMatches.DataBind();
-                    }
-                   
-                    conn.Close();
+                    availableMatches.DataSource = dt;
+                    availableMatches.DataBind();
                 }
+                   
+                conn.Close();
+               // }
             }
         }
     }

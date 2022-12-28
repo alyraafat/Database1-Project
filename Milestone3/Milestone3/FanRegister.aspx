@@ -54,7 +54,7 @@
                 Birth Date:
             </h3>
             <br />
-            <asp:TextBox ID="birthDate" runat="server"></asp:TextBox>
+            <asp:TextBox ID="birthDate" runat="server" type="date"></asp:TextBox>
             <br />
             <br />
            <asp:Button ID="register" runat="server" onClick="fanReg" Text="Register" />

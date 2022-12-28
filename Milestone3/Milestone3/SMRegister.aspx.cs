@@ -25,7 +25,7 @@ namespace Milestone3
             String userName = username.Text;
             String passWord = password.Text;
             String Name = name.Text;
-            String stadiumName = stadium.Text;
+           // String stadiumName = stadium.Text;
             String user = "SELECT * from SystemUser";
             SqlCommand allUsers = new SqlCommand(user, conn);
             SqlCommand addSM = new SqlCommand("addStadiumManager", conn);
@@ -33,7 +33,7 @@ namespace Milestone3
             addSM.Parameters.Add(new SqlParameter("@name", Name));
             addSM.Parameters.Add(new SqlParameter("@password", passWord));
             addSM.Parameters.Add(new SqlParameter("@username", userName));
-            addSM.Parameters.Add(new SqlParameter("@stadiumName", stadiumName));
+            addSM.Parameters.Add(new SqlParameter("@stadiumName", stadiums.SelectedItem.Text));
             conn.Open();
 
             String stadiumSql = "SELECT * from allStadiums";
@@ -50,10 +50,10 @@ namespace Milestone3
             {
                 Response.Write("username is too long or empty");
             }
-            else if (stadiumName.Length > 20 || stadiumName.Length == 0)
-            {
-                Response.Write("stadium name is too long or empty");
-            }
+            //else if (stadiumName.Length > 20 || stadiumName.Length == 0)
+           // {
+            //    Response.Write("stadium name is too long or empty");
+            //}
             else
             {
                 SqlDataReader userReader = allUsers.ExecuteReader();
@@ -69,24 +69,24 @@ namespace Milestone3
                 userReader.Close();
                 if (!UListUsernames.Contains(userName))
                 {
-                    SqlDataReader stadiumReader = allStadium.ExecuteReader();
-                    ArrayList SListNames = new ArrayList();
-                    while (stadiumReader.Read())
-                    {
-                        String resultname = stadiumReader["name"].ToString();
-                        SListNames.Add(resultname);
-                    }
-                    stadiumReader.Close();
-                    if (!SListNames.Contains(stadiumName))
-                    {
-                        Response.Write("stadium does not exist");
-                    }
-                    else
-                    {
+                   // SqlDataReader stadiumReader = allStadium.ExecuteReader();
+                   // ArrayList SListNames = new ArrayList();
+                   // while (stadiumReader.Read())
+                   // {
+                   //     String resultname = stadiumReader["name"].ToString();
+                   //     SListNames.Add(resultname);
+                   // }
+                   // stadiumReader.Close();
+                   // if (!SListNames.Contains(stadiumName))
+                   // {
+                  //      Response.Write("stadium does not exist");
+                   // }
+                   // else
+                   // {
                         addSM.ExecuteNonQuery();
                         Session["user"] = userName;
                         Response.Redirect("Login.aspx");
-                    }
+                   // }
                 }
                 else
                 {

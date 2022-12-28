@@ -97,11 +97,9 @@ namespace Milestone3
             }
             else
             {
-                DateTime date;
-                Response.Write(dateInput.Text);
-                Response.Write("--------------");
-                DateTime.TryParseExact(dateInput.Text, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out date);
-                Response.Write(date.ToString());
+                DateTime date = DateTime.Parse(dateInput.Text);
+                String date2 = date.ToString("yyyy-MM-dd HH:mm:ss");
+                date = DateTime.Parse(date2);
                 //if (!DateTime.TryParseExact(dateInput.Text, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
                 //{
                 //  Response.Write("Write date in this format yyyy-mm-dd");
@@ -142,7 +140,10 @@ namespace Milestone3
             else
             {
                 conn.Open();
-                DateTime date = Convert.ToDateTime(dateOfRequest.Text);
+                DateTime date = DateTime.Parse(dateOfRequest.Text);
+                String date2 = date.ToString("yyyy-MM-dd HH:mm:ss");
+                date = DateTime.Parse(date2);
+                //Convert.ToDateTime(dateOfRequest.Text.ToString());
                 //DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date);
                 //if (!DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
                 // {
