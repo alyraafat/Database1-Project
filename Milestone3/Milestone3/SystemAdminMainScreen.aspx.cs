@@ -62,8 +62,8 @@ namespace Milestone3
                 }
             }
             conn.Close();
-            
         }
+
         protected void deleteClubButton(object sender, EventArgs e) {
             String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
             SqlConnection conn = new SqlConnection(connStr);

@@ -1229,3 +1229,10 @@ CREATE PROC upcomingMatchesOfClubWithNoStadium
 			LEFT OUTER JOIN Stadium S on S.id=M.stadium_id
 		WHERE  (C.name = @clubName OR C2.name = @clubName) AND M.start_time> CURRENT_TIMESTAMP AND M.stadium_id IS NULL
 GO;
+
+CREATE VIEW allMatches2 AS
+	SELECT C1.name AS host_club , C2.name AS guest_club , M.start_time, M.end_time
+	FROM Match M
+		INNER JOIN Club C1 ON C1.id = M.host_id 
+		INNER JOIN Club C2 ON C2.id = M.guest_id; 
+GO;

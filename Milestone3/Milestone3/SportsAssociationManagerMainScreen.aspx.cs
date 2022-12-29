@@ -166,6 +166,7 @@ namespace Milestone3
                             addM.Parameters.Add(new SqlParameter("@starttime", startDateTime));
                             addM.Parameters.Add(new SqlParameter("@endtime", endDateTime));
                             addM.ExecuteNonQuery();
+                            Response.Redirect("SportsAssociationManagerMainScreen.aspx");
                         }
                         matchReader.Close();
                     }
@@ -174,7 +175,7 @@ namespace Milestone3
             }
             catch (FormatException)
             {
-                Response.Write("<script>alert('Wrong date Format');</script>");
+                Response.Write("<script>alert('Empty date(s)');</script>");
             }
             
         }
@@ -197,14 +198,14 @@ namespace Milestone3
                 String club = "SELECT * from allCLubs";
                 SqlCommand allClub = new SqlCommand(club, conn);
 
-                String match = "SELECT * from allMatches ";
+                String match = "SELECT * from allMatches2";
                 SqlCommand allMatch = new SqlCommand(match, conn);
 
-                SqlCommand addM = new SqlCommand("deleteMatch", conn);
+                SqlCommand addM = new SqlCommand("deleteMatchWithDateTime", conn);
                 addM.CommandType = CommandType.StoredProcedure;
                 addM.Parameters.Add(new SqlParameter("@namehostclub", hostName));
                 addM.Parameters.Add(new SqlParameter("@nameguestclub", guestName));
-
+                addM.Parameters.Add(new SqlParameter("@startTime", startDateTime));
 
                 conn.Open();
                 SqlDataReader clubReader = allClub.ExecuteReader();
@@ -226,18 +227,20 @@ namespace Milestone3
                 {
                     Response.Write("<script>alert('Please make Sure the guest club name is write');</script>");
                 }
+                else if (hostName.Equals(guestName))
+                {
+                    Response.Write("<script>alert('The host and guest teams cannot be the same');</script>");
+                }
                 else
                 {
                     Boolean isThereMatch = false;
                     SqlDataReader matchReader = allMatch.ExecuteReader();
-                    String resultTime = "";
                     while (matchReader.Read())
                     {
                         String resultHost = matchReader["host_club"].ToString();
                         String resultGuest = matchReader["guest_club"].ToString();
-                        resultTime = matchReader["start_time"].ToString();
 
-                        if (resultHost.Equals(hostName) && resultGuest.Equals(guestName))
+                        if (resultHost.Equals(hostName) && resultGuest.Equals(guestName) && matchReader["start_time"].Equals(startDateTime) && matchReader["end_time"].Equals(endDateTime))
                         {
                             isThereMatch = true;
                         }
@@ -250,8 +253,9 @@ namespace Milestone3
                     }
                     else
                     {
-                        Response.Write("<script>alert('Done');</script>");
+                        //Response.Write("<script>alert('Done');</script>");
                         addM.ExecuteNonQuery();
+                        Response.Redirect("SportsAssociationManagerMainScreen.aspx");
                     }
                     matchReader.Close();
                 }
@@ -259,7 +263,7 @@ namespace Milestone3
             }
             catch (FormatException)
             {
-                Response.Write("<script>alert('Wrong date Format');</script>");
+                Response.Write("<script>alert('Empty date(s)');</script>");
             }
         }
 

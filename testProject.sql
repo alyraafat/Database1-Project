@@ -108,6 +108,7 @@ EXEC addNewMatch @hostclub='Chelsea' ,@guestclub='Barcelona', @starttime='2022/1
 EXEC addNewMatch @hostclub='Bayern Munich' ,@guestclub='Barcelona', @starttime='2023/01/15 07:00:00', @endtime='2023/01/15 09:00:00'
 EXEC addNewMatch @hostclub='Bayern Munich' ,@guestclub='Barcelona', @starttime='2023/01/13 07:00:00', @endtime='2023/01/13 09:00:00'
 
+
 EXEC addHostRequest @clubName='Bayern Munich',@stadiumName='Allianz arena', @startTime='2022/12/27 08:00:00'
 EXEC addHostRequest @clubName='Chelsea',@stadiumName='Allianz arena', @startTime='2022/12/30 07:00:00'
 EXEC addHostRequest @clubName='Bayern Munich',@stadiumName='Allianz arena', @startTime='2023/01/15 07:00:00'
