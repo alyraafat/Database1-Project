@@ -77,12 +77,15 @@ namespace Milestone3
             SqlDataReader fansReader = allFans.ExecuteReader();
             ArrayList FListUsernames = new ArrayList();
             ArrayList FListPassword = new ArrayList();
+            ArrayList FListStatus = new ArrayList();
             while (fansReader.Read())
             {
                 String resultusernames = fansReader["username"].ToString();
                 String resultpasswords = fansReader["password"].ToString();
+                String resultStatus = fansReader["status"].ToString();
                 FListUsernames.Add(resultusernames);
                 FListPassword.Add(resultpasswords);
+                FListStatus.Add(resultStatus);
             }
             fansReader.Close();
             SqlDataReader userReader = allUsers.ExecuteReader();
@@ -141,12 +144,21 @@ namespace Milestone3
             {
                 int i = FListUsernames.IndexOf(userName);
                 String password = FListPassword[i].ToString();
+                String status = FListStatus[i].ToString();
                 if (passWord != password)
                     Response.Write("<script>alert('Wrong password');</script>");
                 else
                 {
-                    Session["user"] = userName;
-                    Response.Redirect("FanMainScreen.aspx");
+                    if (status.Equals("True"))
+                    {
+                        Session["user"] = userName;
+                        Response.Redirect("FanMainScreen.aspx");
+                    }
+                    else
+                    {
+                        Response.Write("<script>alert('You are blocked');</script>");
+                    }
+
                 }
             }
             else
