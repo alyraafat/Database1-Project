@@ -1145,8 +1145,7 @@ GO;
 CREATE PROC deleteMatchWithDateTime
 	@namehostclub VARCHAR(20),
 	@nameguestclub VARCHAR(20),	
-	@startTime DATETIME,	
-	@endTime DATETIME	
+	@startTime DATETIME
 	AS
 
 	DECLARE @host INT
@@ -1163,8 +1162,70 @@ CREATE PROC deleteMatchWithDateTime
 	WHERE match_id IN (
 		SELECT id
 		FROM Match
-		WHERE (Match.host_id = @host AND Match.guest_id = @guest AND Match.start_time=@startTime AND Match.end_time=@endTime)
+		WHERE (Match.host_id = @host AND Match.guest_id = @guest AND Match.start_time=@startTime)
 	);
 
 	DELETE FROM Match 
-	WHERE (Match.host_id = @host AND Match.guest_id = @guest AND Match.start_time=@startTime AND Match.end_time=@endTime) 
+	WHERE (Match.host_id = @host AND Match.guest_id = @guest AND Match.start_time=@startTime) 
+GO;
+
+CREATE PROC addHostRequest2 
+	@clubName VARCHAR(20),
+	@stadiumName VARCHAR(20),
+	@startTime DATETIME
+	AS 
+
+	DECLARE @clubRepId INT;
+	DECLARE @hostId INT;
+	SELECT @clubRepId = CR.id, @hostId = C.id
+	FROM ClubRepresentative CR
+		INNER JOIN Club C on C.id = CR.club_id
+	WHERE C.name = @clubName
+
+	DECLARE @stadiumManagerId INT;
+	SELECT @stadiumManagerId = SM.id
+	FROM StadiumManager SM
+		INNER JOIN Stadium S on S.id = SM.stadium_id
+	WHERE S.name = @stadiumName
+
+	DECLARE @matchId INT
+	DECLARE @stadiumId INT
+	SELECT @matchId = M.id, @stadiumId=M.stadium_id
+	FROM Match M
+	WHERE M.host_id = @hostId AND M.start_time = @startTime
+	IF (@matchId IS NOT NULL AND @stadiumManagerId IS NOT NULL AND @clubRepId IS NOT NULL AND @stadiumId IS NULL AND @startTime>CURRENT_TIMESTAMP)
+	BEGIN
+		INSERT INTO HostRequest(match_id,smd,crd) VALUES (@matchId,@stadiumManagerId,@clubRepId);
+	END
+	ELSE 
+	BEGIN
+		PRINT 'One of entries is null as it was not found in the database'
+	END
+GO;
+
+CREATE View getAlreadyPlayedMatches2 AS
+	SELECT c1.name AS host_club_name , c2.name AS guest_club_name , M.start_time , M.end_time
+	FROM Match M
+	INNER JOIN Club c1 on M.host_id = c1.id
+	INNER JOIN Club c2 on M.guest_id = c2.id
+	WHERE M.end_time < CURRENT_TIMESTAMP;
+GO;
+
+CREATE View getUpcomingMatches2 AS
+	SELECT c1.name AS host_club_name , c2.name AS guest_club_name , M.start_time , M.end_time
+	FROM Match M
+	INNER JOIN Club c1 on M.host_id = c1.id
+	INNER JOIN Club c2 on M.guest_id = c2.id
+	WHERE M.start_time > CURRENT_TIMESTAMP;
+GO;
+
+CREATE PROC upcomingMatchesOfClubWithNoStadium 
+	@clubName VARCHAR(20)
+	AS 
+		SELECT C2.name AS competing_club_name,M.start_time
+		FROM Match M 
+			INNER JOIN Club C ON C.id = M.host_id
+			INNER JOIN Club C2 on C2.id = M.guest_id
+			LEFT OUTER JOIN Stadium S on S.id=M.stadium_id
+		WHERE  (C.name = @clubName OR C2.name = @clubName) AND M.start_time> CURRENT_TIMESTAMP AND M.stadium_id IS NULL
+GO;

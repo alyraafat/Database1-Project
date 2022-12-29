@@ -142,6 +142,26 @@ namespace Milestone3
                 DateTime date = DateTime.Parse(dateOfRequest.Text);
                 String date2 = date.ToString("yyyy-MM-dd HH:mm:ss");
                 date = DateTime.Parse(date2);
+                SqlCommand getMatchesWithNoStadium = new SqlCommand("upcomingMatchesOfClubWithNoStadium", conn);
+                getMatchesWithNoStadium.CommandType = CommandType.StoredProcedure;
+                Response.Write(name.Text);
+                getMatchesWithNoStadium.Parameters.Add(new SqlParameter("@clubName", name.Text));
+                SqlDataReader getMatchesWithNoStadiumReader = getMatchesWithNoStadium.ExecuteReader();
+                ArrayList m = new ArrayList();
+                while (getMatchesWithNoStadiumReader.Read())
+                {
+                    m.Add(getMatchesWithNoStadiumReader["start_time"]);
+                }
+                getMatchesWithNoStadiumReader.Close();
+                SqlCommand getMatches = new SqlCommand("SELECT * FROM dbo.upcomingMatchesOfClub2(@clubName)", conn);
+                getMatches.Parameters.AddWithValue("@clubName", name.Text);
+                SqlDataReader getMatchesReader = getMatches.ExecuteReader();
+                ArrayList m2 = new ArrayList();
+                while (getMatchesReader.Read())
+                {
+                    m2.Add(getMatchesReader["start_time"]);
+                }
+                getMatchesReader.Close();
                 //Convert.ToDateTime(dateOfRequest.Text.ToString());
                 //DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date);
                 //if (!DateTime.TryParseExact(dateOfRequest.Text, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
@@ -150,12 +170,28 @@ namespace Milestone3
                 // }
                 // else
                 // {
-                SqlCommand addHostRequest = new SqlCommand("addHostRequest", conn);
-                addHostRequest.CommandType = CommandType.StoredProcedure;
-                addHostRequest.Parameters.Add(new SqlParameter("@clubName", name.Text));
-                addHostRequest.Parameters.Add(new SqlParameter("@stadiumName", smdd.SelectedItem.Text));
-                addHostRequest.Parameters.Add(new SqlParameter("@startTime", date));
-                addHostRequest.ExecuteNonQuery();
+                if (!m2.Contains(date))
+                {
+                    Response.Write("<script>alert('No match with this date');</script>");
+                }
+                else
+                {
+                    if (!m.Contains(date))
+                    {
+                        Response.Write("<script>alert('Match is already hosted on a stadium');</script>");
+                    }
+                    else
+                    {
+                        SqlCommand addHostRequest = new SqlCommand("addHostRequest", conn);
+                        addHostRequest.CommandType = CommandType.StoredProcedure;
+                        addHostRequest.Parameters.Add(new SqlParameter("@clubName", name.Text));
+                        addHostRequest.Parameters.Add(new SqlParameter("@stadiumName", smdd.SelectedItem.Text));
+                        addHostRequest.Parameters.Add(new SqlParameter("@startTime", date));
+                        addHostRequest.ExecuteNonQuery();
+                    }
+                    
+                }
+                
             //}
                 conn.Close();
             }
