@@ -97,6 +97,9 @@ SELECT * FROM TicketBuyingTransactions;
 SELECT * FROM HostRequest;
 SELECT * FROM SystemAdmin;
 
+INSERT INTO SystemUser(username,password) VALUES ('admin','123');
+INSERT INTO SystemAdmin(username, name) VALUES ('admin' , 'admin name');
+
 DELETE FROM TICKET WHERE match_id IS NULL
 DELETE FROM TICKET WHERE match_id = 7
 DELETE FROM HostRequest WHERE id = 4
