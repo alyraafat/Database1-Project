@@ -60,7 +60,7 @@ namespace Milestone3
             if (!IsPostBack)
             { 
                 smdd.AppendDataBoundItems = true;
-                String stadiumSql = "SELECT * from allStadiums";
+                String stadiumSql = "SELECT * from allStadiumManagers";
                 SqlCommand allStadium = new SqlCommand(stadiumSql, conn);
                 SqlDataReader stadiumMReader = allStadium.ExecuteReader();
                 //ArrayList SListNames = new ArrayList();
@@ -73,7 +73,7 @@ namespace Milestone3
                 try
                 {
                     smdd.DataSource = stadiumMReader;
-                    smdd.DataTextField = "name";
+                    smdd.DataTextField = "stadium_name";
                     smdd.DataBind();
                     stadiumMReader.Close();
                 }
@@ -122,8 +122,7 @@ namespace Milestone3
                 {
                     availableStadiums.DataSource = dt2;
                     availableStadiums.DataBind();
-                }
-                    
+                }       
                 conn.Close();
                // }
             } 
@@ -154,11 +153,8 @@ namespace Milestone3
                 SqlCommand addHostRequest = new SqlCommand("addHostRequest", conn);
                 addHostRequest.CommandType = CommandType.StoredProcedure;
                 addHostRequest.Parameters.Add(new SqlParameter("@clubName", name.Text));
-                addHostRequest.Parameters.Add(new SqlParameter("@stadiumName", smdd.Text));
+                addHostRequest.Parameters.Add(new SqlParameter("@stadiumName", smdd.SelectedItem.Text));
                 addHostRequest.Parameters.Add(new SqlParameter("@startTime", date));
-                Response.Write(name.Text);
-                Response.Write(smdd.Text);
-                Response.Write(date);
                 addHostRequest.ExecuteNonQuery();
             //}
                 conn.Close();

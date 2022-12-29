@@ -108,53 +108,60 @@ namespace Milestone3
                 clubReader.Close();
                 if (!(CListNames.Contains(hostName)))
                 {
-                    Response.Write("<script>alert('Please make Sure the host club name is write');</script>");
+                    Response.Write("<script>alert('Please make Sure the host club name is right');</script>");
                 }
                 else if (!CListNames.Contains(guestName))
                 {
-                    Response.Write("<script>alert('Please make Sure the guest club name is write');</script>");
+                    Response.Write("<script>alert('Please make Sure the guest club name is right');</script>");
                 }
                 else
                 {
-                    Boolean hostTeamFlag = false;
-                    Boolean guestTeamFlag = false;
-                    SqlDataReader matchReader = allMatch.ExecuteReader();
-                    String resultTime = "";
-                    while (matchReader.Read())
+                    if (hostName.Equals(guestName))
                     {
-                        String resultHost = matchReader["host_club"].ToString();
-                        String resultGuest = matchReader["guest_club"].ToString();
-                        resultTime = matchReader["start_time"].ToString();
-                        
-                        if (resultHost.Equals(hostName) || resultGuest.Equals(hostName))
-                        {
-                            if (resultTime.Equals(startDateTime.ToString()))
-                            {
-                                hostTeamFlag = true;
-                                break;
-                            }
-                        }
-                        else if (resultHost.Equals(guestName) || resultGuest.Equals(guestName))
-                        {
-                            if (resultTime.Equals(startDateTime.ToString()))
-                            {
-                                guestTeamFlag = true;
-                                break;
-                            }
-                        }
-                    }
-                    matchReader.Close();
-                    if (hostTeamFlag || guestTeamFlag)
-                    {
-                        Response.Write("<script>alert('There is a match schedueld for one of the teams');</script>");
+                        Response.Write("<script>alert('The host and guest teams cannot be the same');</script>");
                     }
                     else
                     {
-                        Response.Write("<script>alert('Done');</script>");
-                        addM.ExecuteNonQuery();
+                        Boolean hostTeamFlag = false;
+                        Boolean guestTeamFlag = false;
+                        SqlDataReader matchReader = allMatch.ExecuteReader();
+                        String resultTime = "";
+                        while (matchReader.Read())
+                        {
+                            String resultHost = matchReader["host_club"].ToString();
+                            String resultGuest = matchReader["guest_club"].ToString();
+                            resultTime = matchReader["start_time"].ToString();
+
+                            if (resultHost.Equals(hostName) || resultGuest.Equals(hostName))
+                            {
+                                if (resultTime.Equals(startDateTime.ToString()))
+                                {
+                                    hostTeamFlag = true;
+                                    break;
+                                }
+                            }
+                            else if (resultHost.Equals(guestName) || resultGuest.Equals(guestName))
+                            {
+                                if (resultTime.Equals(startDateTime.ToString()))
+                                {
+                                    guestTeamFlag = true;
+                                    break;
+                                }
+                            }
+                        }
+                        matchReader.Close();
+                        if (hostTeamFlag || guestTeamFlag)
+                        {
+                            Response.Write("<script>alert('There is a match schedueld for one of the teams');</script>");
+                        }
+                        else
+                        {
+                            Response.Write("<script>alert('Done');</script>");
+                            addM.ExecuteNonQuery();
+                        }
+                        matchReader.Close();
                     }
-                    matchReader.Close();
-                }
+                } 
                 conn.Close();
             }
             catch (FormatException)
