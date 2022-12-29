@@ -42,32 +42,32 @@ namespace Milestone3
             conn.Open();
             if (Name.Length > 20 || Name.Length == 0)
             {
-                Response.Write("name is too long or empty");
-            }
-            else if (passWord.Length > 20 || passWord.Length == 0)
-            {
-                Response.Write("password is too long or empty");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else if (userName.Length > 20 || userName.Length == 0)
             {
-                Response.Write("username is too long or empty");
+                Response.Write("<script>alert('username is too long or empty');</script>");
+            }
+            else if (passWord.Length > 20 || passWord.Length == 0)
+            {
+                Response.Write("<script>alert('password is too long or empty');</script>");
             }
 
             else if (natId.Length > 20 || natId.Length == 0)
             {
-                Response.Write("national id is too long or empty");
+                Response.Write("<script>alert('national id is too long or empty');</script>");
             }
             else if (ph.Length > 20 || ph.Length == 0)
             {
-                Response.Write("phone is too long or empty");
+                Response.Write("<script>alert('phone is too long or empty');</script>");
             }
             else if (add.Length > 20 || add.Length == 0)
             {
-                Response.Write("address is too long or empty");
+                Response.Write("<script>alert('address is too long or empty');</script>");
             }
             else if (birthDate.Text.Length > 20 || birthDate.Text.Length == 0 )
             {
-                Response.Write("birth date is too long or empty");
+                Response.Write("<script>alert('birth date is too long or empty');</script>");
             }
             else
             {
@@ -81,7 +81,7 @@ namespace Milestone3
                 fanReader.Close();
                 if (FListnatIds.Contains(natId))
                 {
-                    Response.Write("national id exists");
+                    Response.Write("<script>alert('national id exists');</script>");
                 }
                 else
                 {
@@ -114,12 +114,11 @@ namespace Milestone3
                     }
                     else
                     {
-                        Response.Write("existing username");
+                        Response.Write("<script>alert('existing username');</script>");
                     }
                 }
                 
-            }
-            
+            }   
             conn.Close();  
         }
     }

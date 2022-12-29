@@ -1127,3 +1127,17 @@ CREATE View getMatches2 AS
 	INNER JOIN Club c2 on M.guest_id = c2.id
 
 GO;
+
+CREATE VIEW allStadiumsWithNoManagers AS
+	SELECT S.name AS stadium_name
+	FROM StadiumManager M
+		RIGHT OUTER JOIN Stadium S ON S.id = M.stadium_id
+	WHERE username IS NULL
+GO;
+
+CREATE VIEW allClubsWithNoRep AS
+	SELECT C.name AS club_name
+	From ClubRepresentative R
+		RIGHT OUTER JOIN Club C ON C.id = R.club_id
+	WHERE username IS NULL
+GO;

@@ -35,15 +35,15 @@ namespace Milestone3
             conn.Open();
             if (Name.Length > 20 || Name.Length == 0)
             {
-                Response.Write("name is too long or empty");
-            }
-            else if (passWord.Length > 20 || passWord.Length == 0)
-            {
-                Response.Write("password is too long or empty");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else if (userName.Length > 20 || userName.Length == 0)
             {
-                Response.Write("username is too long or empty");
+                Response.Write("<script>alert('username is too long or empty');</script>");
+            }
+            else if (passWord.Length > 20 || passWord.Length == 0)
+            {
+                Response.Write("<script>alert('password is too long or empty');</script>");
             }
             else
             {
@@ -66,7 +66,7 @@ namespace Milestone3
                 }
                 else
                 {
-                    Response.Write("existing username");
+                    Response.Write("<script>alert('existing username');</script>");
                 }
             }
             conn.Close();

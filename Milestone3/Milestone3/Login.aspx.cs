@@ -99,14 +99,14 @@ namespace Milestone3
 
             if (!UListUsernames.Contains(userName))
             {
-                Response.Write("This user yb2a 5altak");
+                Response.Write("<script>alert('This user does not exist');</script>");
             }
             else if (AListUsernames.Contains(userName))
             {
                 int i = AListUsernames.IndexOf(userName);
                 String password = AListPassword[i].ToString();
                 if (passWord != password)
-                    Response.Write("Wrong password");
+                    Response.Write("<script>alert('Wrong password');</script>");
                 else
                 {
                     Session["user"] = userName;
@@ -118,7 +118,7 @@ namespace Milestone3
                 int i = CListUsernames.IndexOf(userName);
                 String password = CListPassword[i].ToString();
                 if (passWord != password)
-                    Response.Write("Wrong password");
+                    Response.Write("<script>alert('Wrong password');</script>");
                 else
                 {
                     Session["user"] = userName;
@@ -130,7 +130,7 @@ namespace Milestone3
                 int i = SListUsernames.IndexOf(userName);
                 String password = SListPassword[i].ToString();
                 if (passWord != password)
-                    Response.Write("Wrong password");
+                    Response.Write("<script>alert('Wrong password');</script>");
                 else
                 {
                     Session["user"] = userName;
@@ -142,7 +142,7 @@ namespace Milestone3
                 int i = FListUsernames.IndexOf(userName);
                 String password = FListPassword[i].ToString();
                 if (passWord != password)
-                    Response.Write("Wrong password");
+                    Response.Write("<script>alert('Wrong password');</script>");
                 else
                 {
                     Session["user"] = userName;
@@ -154,7 +154,7 @@ namespace Milestone3
                 int i = UListUsernames.IndexOf(userName);
                 String password = UListPassword[i].ToString();
                 if (passWord != password)
-                    Response.Write("Wrong password");
+                    Response.Write("<script>alert('Wrong password');</script>");
                 else
                 {
                     Response.Redirect("SystemAdminMainScreen.aspx");

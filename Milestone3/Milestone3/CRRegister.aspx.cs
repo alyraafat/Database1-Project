@@ -37,21 +37,23 @@ namespace Milestone3
             conn.Open();
             String clubSql = "SELECT * from allCLubs";
             SqlCommand allClub = new SqlCommand(clubSql, conn);
+            String clubsWithNoRepSql = "SELECT * from allClubsWithNoRep";
+            SqlCommand allClubsWithNoRep = new SqlCommand(clubsWithNoRepSql, conn);
             if (Name.Length > 20 || Name.Length == 0)
             {
-                Response.Write("name is too long or empty");
-            }
-            else if (passWord.Length > 20 || passWord.Length == 0)
-            {
-                Response.Write("password is too long or empty");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else if (userName.Length > 20 || userName.Length == 0)
             {
-                Response.Write("username is too long or empty");
+                Response.Write("<script>alert('username is too long or empty');</script>");
+            }
+            else if (passWord.Length > 20 || passWord.Length == 0)
+            {
+                Response.Write("<script>alert('password is too long or empty');</script>");
             }
             else if (clubName.Length > 20 || clubName.Length == 0)
             {
-                Response.Write("club name is too long or empty");
+                Response.Write("<script>alert('club name is too long or empty');</script>");
             }
             else
             {
@@ -78,18 +80,35 @@ namespace Milestone3
                     clubReader.Close();
                     if (!CListNames.Contains(clubName))
                     {
-                        Response.Write("club does not exist");
+                        Response.Write("<script>alert('club does not exist')</script>");
                     }
                     else
                     {
-                        addRep.ExecuteNonQuery();
-                        Session["user"] = userName;
-                        Response.Redirect("Login.aspx");
+                        SqlDataReader clubReader2 = allClubsWithNoRep.ExecuteReader();
+                        ArrayList CListNamesWithNoManagers = new ArrayList();
+                        while (clubReader2.Read())
+                        {
+                            String resultname = clubReader2["club_name"].ToString();
+                            CListNamesWithNoManagers.Add(resultname);
+
+                        }
+                        clubReader2.Close();
+                        if (!CListNamesWithNoManagers.Contains(clubName))
+                        {
+                            Response.Write("<script>alert('" + clubName + " has a representative already');</script>");
+                        }
+                        else
+                        {
+                            addRep.ExecuteNonQuery();
+                            Session["user"] = userName;
+                            Response.Redirect("Login.aspx");
+                        }
+                        
                     }
                 }
                 else
                 {
-                    Response.Write("existing username");
+                    Response.Write("<script>alert('existing username');</script>");
                 }
             }
             conn.Close();

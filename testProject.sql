@@ -95,7 +95,10 @@ SELECT * FROM Match;
 SELECT * FROM Ticket;
 SELECT * FROM TicketBuyingTransactions;
 SELECT * FROM HostRequest;
+SELECT * FROM SystemAdmin;
 
+DELETE FROM TICKET WHERE match_id IS NULL
+DELETE FROM TICKET WHERE match_id = 7
 DELETE FROM HostRequest WHERE id = 4
 UPDATE HostRequest SET status = 'unhandled' WHERE id=5
 UPDATE Stadium SET capacity = 5 WHERE name='Allianz arena'
