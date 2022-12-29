@@ -71,6 +71,7 @@ namespace Milestone3
             }
             conn.Close();
         }
+
         protected void addMatchButton(object sender, EventArgs e) {
             String connStr = WebConfigurationManager.ConnectionStrings["FootballDB"].ToString();
             SqlConnection conn = new SqlConnection(connStr);
@@ -79,8 +80,14 @@ namespace Milestone3
 
             try
             {
-                DateTime startDateTime = new DateTime(Int32.Parse(startTimeYears.Text),Int32.Parse(startTimeMonth.Text), Int32.Parse(startTimeDay.Text), Int32.Parse(startTimeHours.Text), Int32.Parse(startTimeMinutes.Text),0);
-                DateTime endDateTime = new DateTime(Int32.Parse(endTimeYears.Text),Int32.Parse(endTimeMonths.Text), Int32.Parse(endTimeDays.Text), Int32.Parse(endTimeHours.Text), Int32.Parse(endTimeMinutes.Text),0);
+                DateTime startDateTime = DateTime.Parse(addMatchStartTime.Text);
+                String date = startDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                startDateTime = DateTime.Parse(date);
+                DateTime endDateTime = DateTime.Parse(addMatchEndTime.Text);
+                String date2 = endDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                endDateTime = DateTime.Parse(date2);
+                //DateTime startDateTime = new DateTime(Int32.Parse(startTimeYears.Text),Int32.Parse(startTimeMonth.Text), Int32.Parse(startTimeDay.Text), Int32.Parse(startTimeHours.Text), Int32.Parse(startTimeMinutes.Text),0);
+                // DateTime endDateTime = new DateTime(Int32.Parse(endTimeYears.Text),Int32.Parse(endTimeMonths.Text), Int32.Parse(endTimeDays.Text), Int32.Parse(endTimeHours.Text), Int32.Parse(endTimeMinutes.Text),0);
                 String club = "SELECT * from allCLubs";
                 SqlCommand allClub = new SqlCommand(club, conn);
 
@@ -89,10 +96,6 @@ namespace Milestone3
 
                 SqlCommand addM = new SqlCommand("addNewMatch", conn);
                 addM.CommandType = CommandType.StoredProcedure;
-                addM.Parameters.Add(new SqlParameter("@hostclub", hostName));
-                addM.Parameters.Add(new SqlParameter("@guestclub", guestName));
-                addM.Parameters.Add(new SqlParameter("@starttime", startDateTime));
-                addM.Parameters.Add(new SqlParameter("@endtime", endDateTime));
 
                 conn.Open();
                 SqlDataReader clubReader = allClub.ExecuteReader();
@@ -156,7 +159,12 @@ namespace Milestone3
                         }
                         else
                         {
-                            Response.Write("<script>alert('Done');</script>");
+                            //Response.Write("<script>alert('Done');</script>");
+                            
+                            addM.Parameters.Add(new SqlParameter("@hostclub", hostName));
+                            addM.Parameters.Add(new SqlParameter("@guestclub", guestName));
+                            addM.Parameters.Add(new SqlParameter("@starttime", startDateTime));
+                            addM.Parameters.Add(new SqlParameter("@endtime", endDateTime));
                             addM.ExecuteNonQuery();
                         }
                         matchReader.Close();
@@ -178,8 +186,14 @@ namespace Milestone3
             String guestName = GuestNameAddBox0.Text;
             try
             {
-                DateTime startDateTime = new DateTime(Int32.Parse(startTimeYears0.Text), Int32.Parse(startTimeMonth0.Text), Int32.Parse(startTimeDay0.Text), Int32.Parse(startTimeHours0.Text), Int32.Parse(startTimeMinutes0.Text), 0);
-                DateTime endDateTime = new DateTime(Int32.Parse(endTimeYears0.Text), Int32.Parse(endTimeMonths0.Text), Int32.Parse(endTimeDays0.Text), Int32.Parse(endTimeHours0.Text), Int32.Parse(endTimeMinutes0.Text), 0);
+                DateTime startDateTime = DateTime.Parse(deleteMatchStartTime.Text);
+                String date = startDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                startDateTime = DateTime.Parse(date);
+                DateTime endDateTime = DateTime.Parse(deleteMatchEndTime.Text);
+                String date2 = endDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                endDateTime = DateTime.Parse(date2);
+                // DateTime startDateTime = new DateTime(Int32.Parse(startTimeYears0.Text), Int32.Parse(startTimeMonth0.Text), Int32.Parse(startTimeDay0.Text), Int32.Parse(startTimeHours0.Text), Int32.Parse(startTimeMinutes0.Text), 0);
+                // DateTime endDateTime = new DateTime(Int32.Parse(endTimeYears0.Text), Int32.Parse(endTimeMonths0.Text), Int32.Parse(endTimeDays0.Text), Int32.Parse(endTimeHours0.Text), Int32.Parse(endTimeMinutes0.Text), 0);
                 String club = "SELECT * from allCLubs";
                 SqlCommand allClub = new SqlCommand(club, conn);
 

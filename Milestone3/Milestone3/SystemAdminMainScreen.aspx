@@ -21,6 +21,7 @@
         <div style="margin-left: 80px">
             <asp:Button ID="Button1" OnClick ="addClubButton" runat="server" Text="Add New Club" />
         </div>
+        <br />
         Delete an existing Club:<br />
         <div style="margin-left: 40px">
             <asp:TextBox ID="deleteclubname" runat="server"></asp:TextBox>
@@ -28,6 +29,7 @@
         <div style="margin-left: 40px">
             <asp:Button ID="Button2" OnClick="deleteClubButton" runat="server" Text="Delete Existing Club" />
         </div>
+        <br />
         <p>
             Add a New Stadium</p>
         <p>
@@ -42,20 +44,24 @@
         <div style="margin-left: 40px">
             <asp:TextBox ID="stadiumcapacity" runat="server"></asp:TextBox>
         </div>
+        <br />
         <div style="margin-left: 40px">
-            <asp:Button ID="Button3" OnClick="addNewStadiumButton" runat="server" Text="Button" />
+            <asp:Button ID="Button3" OnClick="addNewStadiumButton" runat="server" Text="Add Stadium" />
         </div>
+        <br />
+        <br />
         Delete Stadium<br />
 &nbsp;&nbsp;&nbsp;
         <asp:TextBox ID="deleteStadiumBox" runat="server"></asp:TextBox>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <asp:Button ID="Button4" OnClick="deleteStadiumButton" runat="server" Text="Button" />
+        <asp:Button ID="Button4" OnClick="deleteStadiumButton" runat="server" Text="Delete Stadium" />
+        <br />
         <br />
         Block fan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <p>
             <asp:TextBox ID="deleteFanBox" runat="server" OnTextChanged="TextBox5_TextChanged" style="height: 25px; width: 168px"></asp:TextBox>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <asp:Button ID="Button5" OnClick="blockFanButton" runat="server" Text="Button" />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
+            <asp:Button ID="Button5" OnClick="blockFanButton" runat="server" Text="Block Fan" />
         </p>
     </form>
 </body>

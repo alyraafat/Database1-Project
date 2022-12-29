@@ -42,49 +42,13 @@ namespace Milestone3
         protected global::System.Web.UI.WebControls.TextBox GuestNameAddBox;
 
         /// <summary>
-        /// startTimeYears control.
+        /// purchaseDate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox startTimeYears;
-
-        /// <summary>
-        /// startTimeMonth control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox startTimeMonth;
-
-        /// <summary>
-        /// startTimeDay control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox startTimeDay;
-
-        /// <summary>
-        /// startTimeHours control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox startTimeHours;
-
-        /// <summary>
-        /// startTimeMinutes control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox startTimeMinutes;
+        protected global::System.Web.UI.WebControls.TextBox purchaseDate;
 
         /// <summary>
         /// Button1 control.

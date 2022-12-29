@@ -1141,3 +1141,30 @@ CREATE VIEW allClubsWithNoRep AS
 		RIGHT OUTER JOIN Club C ON C.id = R.club_id
 	WHERE username IS NULL
 GO;
+
+CREATE PROC deleteMatchWithDateTime
+	@namehostclub VARCHAR(20),
+	@nameguestclub VARCHAR(20),	
+	@startTime DATETIME,	
+	@endTime DATETIME	
+	AS
+
+	DECLARE @host INT
+	SELECT @host = C.id
+	FROM Club C
+	WHERE C.name = @namehostclub;
+
+	DECLARE @guest INT
+	SELECT @guest = C.id
+	FROM Club C
+	Where C.name = @nameguestclub;
+
+	DELETE FROM HostRequest
+	WHERE match_id IN (
+		SELECT id
+		FROM Match
+		WHERE (Match.host_id = @host AND Match.guest_id = @guest AND Match.start_time=@startTime AND Match.end_time=@endTime)
+	);
+
+	DELETE FROM Match 
+	WHERE (Match.host_id = @host AND Match.guest_id = @guest AND Match.start_time=@startTime AND Match.end_time=@endTime) 
