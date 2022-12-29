@@ -93,7 +93,7 @@ namespace Milestone3
             //get available Stadiums
             if (dateInput.Text.Length > 20 || dateInput.Text.Length == 0)
             {
-                Response.Write("date is too long or empty");
+                Response.Write("<script>alert('date is too long or empty');</script>");
             }
             else
             {
@@ -135,7 +135,7 @@ namespace Milestone3
             SqlConnection conn = new SqlConnection(connStr);
             if (dateOfRequest.Text.Length > 20 || dateOfRequest.Text.Length == 0)
             {
-                Response.Write("date of request is too long or empty");
+                Response.Write("<script>alert('date of request is too long or empty');</script>");
             }
             else
             {

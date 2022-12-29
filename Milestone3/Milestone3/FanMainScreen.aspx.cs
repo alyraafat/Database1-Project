@@ -59,10 +59,10 @@ namespace Milestone3
                 fanReader.Close();
                 if (nationalId.Length == 0)
                 {
-                    Response.Write("User not found");
+                    Response.Write("<script>alert('User not found');</script>");
                 }
                 else if (isBlocked.Equals("False")) {
-                    Response.Write("You are Blocked");
+                    Response.Write("<script>alert('You are Blocked');</script>");
                 }
                 else
                 {
@@ -89,18 +89,18 @@ namespace Milestone3
                     if (matchFound)
                     {
                         purchase.ExecuteNonQuery();
-                        Response.Write(isBlocked);
+                        Response.Write("<script>alert('" + isBlocked+ "');</script>");
                     }
                     else
                     {
-                        Response.Write("Match not found");
+                        Response.Write("<script>alert('Match not found');</script>");
                     }
                     matchReader.Close();
                     conn.Close();
                 }  
             }
             catch (FormatException) {
-                Response.Write("wrong date format");
+                Response.Write("<script>alert('wrong date format');</script>");
             }
         }
 
@@ -111,7 +111,7 @@ namespace Milestone3
             //get available Matches
             if (dateOfAvailableMatches.Text.Length > 20 || dateOfAvailableMatches.Text.Length == 0)
             {
-                Response.Write("date is too long or empty");
+                Response.Write("<script>alert('date is too long or empty');</script>");
             }
             else
             {

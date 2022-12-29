@@ -37,10 +37,10 @@ namespace Milestone3
             conn.Open();
             SqlDataReader clubReader = allClub.ExecuteReader();
             if (newName.Length > 20 || newName.Length == 0) {
-                Response.Write("name is to long");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else if (newLocation.Length > 20 || newLocation.Length == 0 ) {
-                Response.Write("name is to long");
+                Response.Write("<script>alert('location is too long or empty');</script>");
             }
             else {
                 ArrayList CListNames = new ArrayList();
@@ -55,7 +55,7 @@ namespace Milestone3
                 clubReader.Close();
                 if (CListNames.Contains(newName))
                 {
-                    Response.Write("Cannot add");
+                    Response.Write("<script>alert('Can not add as it already exists');</script>");
                 }
                 else {
                     addC.ExecuteNonQuery();
@@ -79,9 +79,9 @@ namespace Milestone3
 
             conn.Open();
             SqlDataReader clubReader = allClub.ExecuteReader();
-            if (deleteName.Length > 20)
+            if (deleteName.Length > 20 || deleteName.Length == 0)
             {
-                Response.Write("name is to long");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else
             {
@@ -101,7 +101,7 @@ namespace Milestone3
                 }
                 else
                 {
-                    Response.Write("There is no club");
+                    Response.Write("<script>alert('There is no club');</script>");
                 }
             }
             conn.Close();
@@ -127,14 +127,14 @@ namespace Milestone3
             SqlDataReader stadiumReader = allStadium.ExecuteReader();
             if (newName.Length > 20 || newName.Length == 0)
             {
-                Response.Write("name is to long or to short");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else if (newLocation.Length > 20 || newLocation.Length == 0)
             {
-                Response.Write("location is to long or to short");
+                Response.Write("<script>alert('location is too long or empty');</script>");
             }
             else if (stadiumcapacity.Text.Length == 0 || newCapacity == 0) {
-                Response.Write("Capacity cannot be equal 0");
+                Response.Write("<script>alert('capacity can not be equal 0');</script>");
             }
             else
             {
@@ -153,7 +153,7 @@ namespace Milestone3
                 stadiumReader.Close();
                 if (SListNames.Contains(newName))
                 {
-                    Response.Write("Cannot add");
+                    Response.Write("<script>alert('Can not add as it already exists');</script>");
                 }
                 else
                 {
@@ -179,9 +179,9 @@ namespace Milestone3
 
             conn.Open();
             SqlDataReader stadiumReader = allStadium.ExecuteReader();
-            if (deleteName.Length > 20)
+            if (deleteName.Length > 20 || deleteName.Length==0)
             {
-                Response.Write("name is to long");
+                Response.Write("<script>alert('name is too long or empty');</script>");
             }
             else
             {
@@ -195,11 +195,11 @@ namespace Milestone3
                 if (SListNames.Contains(deleteName))
                 {
                     deleteC.ExecuteNonQuery();
-                    Response.Write("Done");
+                   // Response.Write("Done");
                 }
                 else
                 {
-                    Response.Write("There is no stadium");
+                    Response.Write("<script>alert('There is no stadium');</script>");
                 }
             }
             conn.Close();
@@ -219,9 +219,9 @@ namespace Milestone3
 
             conn.Open();
             SqlDataReader fanReader = allFan.ExecuteReader();
-            if (deleteFan.Length > 20)
+            if (deleteFan.Length > 20 || deleteFan.Length==0)
             {
-                Response.Write("nationalid is to long");
+                Response.Write("<script>alert('national id is too long or empty');</script>");
             }
             else
             {
@@ -235,11 +235,11 @@ namespace Milestone3
                 if (FListNationalID.Contains(deleteFan))
                 {
                     blockF.ExecuteNonQuery();
-                    Response.Write("Done");
+                    //Response.Write("Done");
                 }
                 else
                 {
-                    Response.Write("There is no fan");
+                    Response.Write("<script>alert('There is no fan');</script>");
                 }
             }
             conn.Close();

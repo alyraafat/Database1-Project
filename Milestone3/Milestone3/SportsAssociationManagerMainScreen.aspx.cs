@@ -108,11 +108,11 @@ namespace Milestone3
                 clubReader.Close();
                 if (!(CListNames.Contains(hostName)))
                 {
-                    Response.Write("Please make Sure the host club name is write");
+                    Response.Write("<script>alert('Please make Sure the host club name is write');</script>");
                 }
                 else if (!CListNames.Contains(guestName))
                 {
-                    Response.Write("Please make Sure the guest club name is write");
+                    Response.Write("<script>alert('Please make Sure the guest club name is write');</script>");
                 }
                 else
                 {
@@ -146,11 +146,11 @@ namespace Milestone3
                     matchReader.Close();
                     if (hostTeamFlag || guestTeamFlag)
                     {
-                        Response.Write("There is a match schedueld for one of the teams");
+                        Response.Write("<script>alert('There is a match schedueld for one of the teams');</script>");
                     }
                     else
                     {
-                        Response.Write("Done");
+                        Response.Write("<script>alert('Done');</script>");
                         addM.ExecuteNonQuery();
                     }
                     matchReader.Close();
@@ -159,7 +159,7 @@ namespace Milestone3
             }
             catch (FormatException)
             {
-                Response.Write("Wrong date Format");
+                Response.Write("<script>alert('Wrong date Format');</script>");
             }
             
         }
@@ -199,11 +199,11 @@ namespace Milestone3
                 clubReader.Close();
                 if (!(CListNames.Contains(hostName)))
                 {
-                    Response.Write("Please make Sure the host club name is write");
+                    Response.Write("<script>alert('Please make Sure the host club name is write');</script>");
                 }
                 else if (!CListNames.Contains(guestName))
                 {
-                    Response.Write("Please make Sure the guest club name is write");
+                    Response.Write("<script>alert('Please make Sure the guest club name is write');</script>");
                 }
                 else
                 {
@@ -225,11 +225,11 @@ namespace Milestone3
                     matchReader.Close();
                     if (!isThereMatch)
                     {
-                        Response.Write("There is no matches between these 2 clubs");
+                        Response.Write("<script>alert('There is no matches between these 2 clubs');</script>");
                     }
                     else
                     {
-                        Response.Write("Done");
+                        Response.Write("<script>alert('Done');</script>");
                         addM.ExecuteNonQuery();
                     }
                     matchReader.Close();
@@ -238,7 +238,7 @@ namespace Milestone3
             }
             catch (FormatException)
             {
-                Response.Write("Wrong date Format");
+                Response.Write("<script>alert('Wrong date Format');</script>");
             }
         }
 
