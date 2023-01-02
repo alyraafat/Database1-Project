@@ -1048,9 +1048,9 @@ CREATE FUNCTION requestsFromClub(@stadiumName varchar(20) , @clubName varchar(20
 			INNER JOIN Club host on Mat.host_id = host.id
 			INNER JOIN Club guest on Mat.guest_id = guest.id
 			INNER JOIN HostRequest H ON H.match_id = Mat.id
-			INNER JOIN StadiumManager SM ON H.smd = SM.id 
-			INNER JOIN ClubRepresentative CR ON CR.club_id = H.crd
+			INNER JOIN StadiumManager SM ON H.smd = SM.id
 			INNER JOIN Stadium S ON S.id = SM.stadium_id
+			INNER JOIN ClubRepresentative CR ON CR.id = H.crd
 		WHERE host.name = @clubName AND S.name = @stadiumName
 GO;
 
@@ -1112,11 +1112,11 @@ CREATE FUNCTION requests(@stadiumName varchar(20))
 			INNER JOIN Club guest on Mat.guest_id = guest.id
 			INNER JOIN HostRequest H ON H.match_id = Mat.id
 			INNER JOIN StadiumManager SM ON H.smd = SM.id 
-			INNER JOIN ClubRepresentative CR ON CR.club_id = H.crd
+			INNER JOIN ClubRepresentative CR ON CR.id = H.crd
 			INNER JOIN Stadium S ON S.id = SM.stadium_id
 		WHERE S.name = @stadiumName
 GO;
-DROP FUNCTION requests
+
 
 GO;
 

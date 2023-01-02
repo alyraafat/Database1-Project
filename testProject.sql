@@ -99,6 +99,10 @@ SELECT * FROM SystemAdmin;
 
 INSERT INTO SystemUser(username,password) VALUES ('admin','123');
 INSERT INTO SystemAdmin(username, name) VALUES ('admin' , 'admin name');
+SELECT * FROM dbo.requests('cairo')
+DROP FUNCTION requests
+Update HostRequest SET status = 'unhandled' WHERE match_id='1'
+EXEC acceptRequest @stadiumManagerUserName='maro', @hostingClubName='ahly', @guestClubName='zamalek',@matchStartTime='2023/01/31 11:55:00'
 
 DELETE FROM TICKET WHERE match_id IS NULL
 DELETE FROM TICKET WHERE match_id = 7
